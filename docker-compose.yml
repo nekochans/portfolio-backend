@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  portfolio-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    volumes:
+      - ./:/go/app
+    command: realize start --run
+    ports:
+      - 8888:8888

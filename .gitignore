@@ -10,3 +10,12 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# direnv
+.envrc
+
+# IDE Setting Files
+.idea
+
+# output go build
+portfolio-backend
