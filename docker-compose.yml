@@ -8,6 +8,6 @@ services:
       target: build
     volumes:
       - ./:/go/app
-    command: go run main.go
+    command: realize start --run
     ports:
       - 8888:8888
