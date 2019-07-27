@@ -11,7 +11,14 @@ schema:
       method: go build -o portfolio-backend
     run:
       status: true
-      method: ./portfolio-backend
+      method: /go/bin/dlv
+  args:
+    - exec
+    - ./portfolio-backend
+    - --headless=true
+    - --listen=:2345
+    - --api-version=2
+    - --accept-multiclient
   watcher:
     extensions:
     - go
