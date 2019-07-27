@@ -9,7 +9,6 @@ services:
     volumes:
       - ./:/go/app
     command: realize start --run
-    privileged: true
     ports:
       - 8888:8888
       - 2345:2345
