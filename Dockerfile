@@ -6,11 +6,13 @@ WORKDIR /go/app
 
 COPY . .
 
-RUN set -x && \
+RUN set -ex && \
   apk update && \
   apk add --no-cache git && \
   go build -o portfolio-backend && \
-  go get github.com/oxequa/realize
+  go get -u github.com/oxequa/realize && \
+  go get -u github.com/go-delve/delve/cmd/dlv && \
+  go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv
 
 FROM alpine:3.10
 
