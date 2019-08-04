@@ -23,4 +23,4 @@ services:
     ports:
       - 80:80
     environment:
-      - GO_HOST=go
+      - BACKEND_HOST=go:8888

@@ -18,7 +18,7 @@ server {
         proxy_set_header X-Forwarded-Server $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_cache_bypass $http_upgrade;
-        proxy_pass http://${GO_HOST}:8888;
+        proxy_pass http://${BACKEND_HOST};
     }
 
     #--------------------
