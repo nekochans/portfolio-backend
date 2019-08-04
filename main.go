@@ -43,6 +43,13 @@ func (s *Server) Middleware() {
 func (s *Server) Router() {
 	h := NewHandler()
 
+	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		type json struct {
+			Message string `json:"message"`
+		}
+		res := json{ Message: "I like cat. 🐱🐱" }
+		respondJSON(w, http.StatusOK, res)
+	})
 	s.router.Route("/members", func(members chi.Router) {
 		members.Get("/{id}", h.ShowMember)
 		members.Get("/", h.MemberList)
@@ -121,8 +128,8 @@ func (he *HTTPError) Error() string {
 
 func main() {
 	var (
-		port   = flag.String("port", "8888", "addr to bind")
-		env    = flag.String("env", "develop", "実行環境 (production, staging, develop)")
+		port = flag.String("port", "8888", "addr to bind")
+		env  = flag.String("env", "develop", "実行環境 (production, staging, develop)")
 	)
 	flag.Parse()
 	s := New()
