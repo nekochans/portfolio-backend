@@ -1,5 +1,7 @@
 FROM golang:1.12.7-alpine3.10 as build
 
+LABEL maintainer="https://github.com/nekochans"
+
 ENV GO111MODULE on
 
 WORKDIR /go/app

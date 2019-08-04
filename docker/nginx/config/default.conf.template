@@ -1,0 +1,50 @@
+server {
+    listen 80;
+    server_name _;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    # リクエストサイズの最大値
+    client_max_body_size 1M;
+
+    location / {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_cache_bypass $http_upgrade;
+        proxy_pass http://${BACKEND_HOST};
+    }
+
+    #--------------------
+    # 静的ファイル設定
+    #--------------------
+    # 画像やCSSにはキャッシュの有効期限を設定＆アクセスログOFF
+    location ~ \.(html|css|js|jpe?g|png|gif|svg|mpg|flv|swf)$ {
+        expires 10d;
+        access_log off;
+        break;
+    }
+
+    # .gitや.htaccessにはアクセス禁止
+    location ~ /\.(ht|git|svn) {
+        deny all;
+    }
+
+    # faviconへのアクセスは記録しない
+    location = /favicon.ico {
+        access_log off;
+        log_not_found off;
+    }
+
+    # robots.txtへのアクセスは記録しない
+    location = /robots.txt {
+        access_log off;
+        log_not_found off;
+    }
+}
