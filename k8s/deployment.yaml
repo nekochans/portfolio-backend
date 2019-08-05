@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio-backend
+  labels:
+    app: portfolio-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portfolio-backend
+  template:
+    metadata:
+      labels:
+        app: portfolio-backend
+    spec:
+      containers:
+        - name: nginx
+          image: gcr.io/nekochans/portfolio-backend-nginx:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: BACKEND_HOST
+              value: "localhost:8888"
+        - name: app
+          image: gcr.io/nekochans/portfolio-backend-go:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8888
