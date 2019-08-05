@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: portfolio-backend
+  labels:
+    app: portfolio-backend
+spec:
+  selector:
+    app: portfolio-backend
+  ports:
+    - name: http
+      port: 80
+  type: NodePort
