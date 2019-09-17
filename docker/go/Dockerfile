@@ -1,8 +1,6 @@
-FROM golang:1.12.7-alpine3.10 as build
+FROM golang:1.13.0-alpine3.10 as build
 
 LABEL maintainer="https://github.com/nekochans"
-
-ENV GO111MODULE on
 
 WORKDIR /go/app
 
@@ -12,7 +10,8 @@ RUN set -ex && \
   apk update && \
   apk add --no-cache git && \
   go build -o portfolio-backend && \
-  go get -u github.com/oxequa/realize && \
+  go get gopkg.in/urfave/cli.v2@master && \
+  go get github.com/oxequa/realize && \
   go get -u github.com/go-delve/delve/cmd/dlv && \
   go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv
 
