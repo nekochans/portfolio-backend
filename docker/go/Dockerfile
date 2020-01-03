@@ -1,4 +1,4 @@
-FROM golang:1.13.0-alpine3.10 as build
+FROM golang:1.13-alpine3.11 as build
 
 LABEL maintainer="https://github.com/nekochans"
 
@@ -15,7 +15,7 @@ RUN set -ex && \
   go get -u github.com/go-delve/delve/cmd/dlv && \
   go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv
 
-FROM alpine:3.10
+FROM alpine:3.11
 
 WORKDIR /app
 
