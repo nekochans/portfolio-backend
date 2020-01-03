@@ -1,4 +1,4 @@
-module github.com:nekochans/portfolio-backend
+module github.com/nekochans/portfolio-backend
 
 go 1.13
 
