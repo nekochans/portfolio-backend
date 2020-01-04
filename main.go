@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/nekochans/portfolio-backend/infrastructure"
 )
 
 // Server Server
@@ -47,8 +47,8 @@ func (s *Server) Router() {
 		type json struct {
 			Message string `json:"message"`
 		}
-		res := json{ Message: "I like cat. 🐱🐱" }
-		respondJSON(w, http.StatusOK, res)
+		res := json{Message: "I like cat. 🐱🐱"}
+		infrastructure.CreateJsonResponse(w, http.StatusOK, res)
 	})
 	s.router.Route("/members", func(members chi.Router) {
 		members.Get("/{id}", h.ShowMember)
@@ -73,7 +73,7 @@ func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
 	}
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	res := json{ID: id, Name: fmt.Sprint("name_", id)}
-	respondJSON(w, http.StatusOK, res)
+	infrastructure.CreateJsonResponse(w, http.StatusOK, res)
 }
 
 // List endpoint
@@ -86,44 +86,7 @@ func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
 		{2, "🐶"},
 		{3, "🐰"},
 	}
-	respondJSON(w, http.StatusOK, users)
-}
-
-// respondJSON レスポンスとして返すjsonを生成して、writerに書き込む
-func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
-	response, err := json.MarshalIndent(payload, "", "    ")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	w.Write([]byte(response))
-}
-
-// respondError レスポンスとして返すエラーを生成する
-func respondError(w http.ResponseWriter, code int, err error) {
-	log.Printf("err: %v", err)
-	if e, ok := err.(*HTTPError); ok {
-		respondJSON(w, e.Code, e)
-	} else if err != nil {
-		he := HTTPError{
-			Code:    code,
-			Message: err.Error(),
-		}
-		respondJSON(w, code, he)
-	}
-}
-
-// HTTPError エラー用
-type HTTPError struct {
-	Code    int
-	Message string
-}
-
-func (he *HTTPError) Error() string {
-	return fmt.Sprintf("code=%d, message=%v", he.Code, he.Message)
+	infrastructure.CreateJsonResponse(w, http.StatusOK, users)
 }
 
 func main() {
