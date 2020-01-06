@@ -33,3 +33,16 @@ export GCP_PROJECT_ID=作成したGCPのProjectID
 ## gcr（Container Registry）に反映する
 
 `docker-push-to-gcr.sh` を実行して下さい。
+
+## ソースコードのフォーマット
+
+`go fmt` で行います。
+
+`go fmt $(go list)/...` とすれば再帰的に実行されます。
+
+`go fmt` は内部で `gofmt` を実行しています。
+
+`gofmt` は再帰的にファイルを探してくれるので `gofmt -l -s -w .` とするのがオススメです。
+
+※ ソースコードフォーマットに関しては後でスクリプト化します。
+
