@@ -6,14 +6,19 @@ WORKDIR /go/app
 
 COPY . .
 
-RUN set -ex && \
+ENV GO111MODULE=off
+
+RUN set -eux && \
   apk update && \
   apk add --no-cache git && \
-  go build -o portfolio-backend && \
-  go get gopkg.in/urfave/cli.v2@master && \
   go get github.com/oxequa/realize && \
   go get -u github.com/go-delve/delve/cmd/dlv && \
   go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv
+
+ENV GO111MODULE on
+
+RUN set -eux && \
+  go build -o portfolio-backend
 
 FROM alpine:3.11
 
