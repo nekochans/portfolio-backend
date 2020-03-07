@@ -22,3 +22,6 @@ portfolio-backend
 
 # realize Setting Files
 .realize.yaml
+
+# goenv Setting Files
+.go-version
