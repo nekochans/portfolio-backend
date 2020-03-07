@@ -3,29 +3,29 @@ settings:
     force: false
     interval: 0s
 schema:
-- name: app
-  path: .
-  commands:
-    install:
-      status: true
-      method: go build -o portfolio-backend
-    run:
-      status: true
-      method: /go/bin/dlv
-  args:
-    - exec
-    - ./portfolio-backend
-    - --headless=true
-    - --listen=:2345
-    - --api-version=2
-    - --accept-multiclient
-  watcher:
-    extensions:
-    - go
-    paths:
-    - /
-    ignore:
+  - name: app
+    path: .
+    commands:
+      install:
+        status: true
+        method: go build -o portfolio-backend
+      run:
+        status: true
+        method: /go/bin/dlv
+    args:
+      - exec
+      - ./portfolio-backend
+      - --headless=true
+      - --listen=:2345
+      - --api-version=2
+      - --accept-multiclient
+    watcher:
+      extensions:
+        - go
       paths:
-      - .git
-      - .realize
-      - vendor
+        - /
+      ignore:
+        paths:
+          - .git
+          - .realize
+          - vendor
