@@ -1,4 +1,4 @@
-FROM nginx:1.17.3-alpine
+FROM nginx:1.17.9-alpine
 
 LABEL maintainer="https://github.com/nekochans"
 
