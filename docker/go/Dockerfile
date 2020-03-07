@@ -1,4 +1,4 @@
-FROM golang:1.13-alpine3.11 as build
+FROM golang:1.14-alpine3.11 as build
 
 LABEL maintainer="https://github.com/nekochans"
 
