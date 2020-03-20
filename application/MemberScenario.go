@@ -6,7 +6,7 @@ type MemberScenario struct {
 }
 
 type MemberFetchAllResponse struct {
-	Items domain.Members
+	Items domain.Members `json:"items"`
 }
 
 func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
