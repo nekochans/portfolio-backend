@@ -8,7 +8,7 @@ schema:
     commands:
       install:
         status: true
-        method: go build -o portfolio-backend
+        method: go build -o portfolio-backend ./cmd/rest/main.go
       run:
         status: true
         method: /go/bin/dlv

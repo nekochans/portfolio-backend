@@ -18,7 +18,7 @@ RUN set -eux && \
 ENV GO111MODULE on
 
 RUN set -eux && \
-  go build -o portfolio-backend
+  go build -o portfolio-backend ./cmd/rest/main.go
 
 FROM alpine:3.11
 

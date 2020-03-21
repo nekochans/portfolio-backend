@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"fmt"
 	"github.com/go-chi/chi"
+	"github.com/nekochans/portfolio-backend/application"
 	"net/http"
 	"strconv"
 )
@@ -25,14 +26,7 @@ func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
-	users := []struct {
-		ID   int    `json:"id"`
-		User string `json:"user"`
-	}{
-		{1, "🐱"},
-		{2, "🐶"},
-		{3, "🐰"},
-		{4, "(=^・^=)"},
-	}
-	CreateJsonResponse(w, http.StatusOK, users)
+	ms := application.MemberScenario{}
+	ml := ms.FetchAll()
+	CreateJsonResponse(w, http.StatusOK, ml)
 }
