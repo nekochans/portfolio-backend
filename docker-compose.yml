@@ -16,6 +16,14 @@ services:
       - apparmor:unconfined
     cap_add:
       - SYS_PTRACE
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      TEST_DB_USER: ${TEST_DB_USER}
+      TEST_DB_PASSWORD: ${TEST_DB_PASSWORD}
+      TEST_DB_NAME: ${TEST_DB_NAME}
   nginx:
     build:
       context: .
@@ -29,10 +37,10 @@ services:
       context: .
       dockerfile: docker/mysql/Dockerfile
     environment:
-      MYSQL_DATABASE: portfolio_backend
-      MYSQL_USER: nekochans
-      MYSQL_PASSWORD: nekochans(Password2222)
-      MYSQL_ROOT_PASSWORD: nekochans(Password2222)
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       - "63306:3306"
     volumes:
