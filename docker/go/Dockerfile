@@ -13,7 +13,8 @@ RUN set -eux && \
   apk add --no-cache git && \
   go get github.com/oxequa/realize && \
   go get -u github.com/go-delve/delve/cmd/dlv && \
-  go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv
+  go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv && \
+  go get -tags 'mysql' -u github.com/golang-migrate/migrate/cmd/migrate
 
 ENV GO111MODULE on
 
