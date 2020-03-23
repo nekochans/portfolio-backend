@@ -31,6 +31,7 @@ func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
+	// TODO DBオブジェクトの生成場所は別の場所を検討する
 	db, err := sql.Open("mysql", config.GetDsn())
 	log.Println(db)
 	log.Println(err)
