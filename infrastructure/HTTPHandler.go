@@ -1,9 +1,14 @@
 package infrastructure
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/go-chi/chi"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/application"
+	"github.com/nekochans/portfolio-backend/config"
+	"github.com/nekochans/portfolio-backend/infrastructure/repository"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -26,7 +31,12 @@ func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
-	ms := application.MemberScenario{}
-	ml := ms.FetchAll()
+	db, err := sql.Open("mysql", config.GetDsn())
+	log.Println(db)
+	log.Println(err)
+	repo := &repository.MySQLMemberRepository{DB: db}
+
+	ms := application.MemberScenario{MemberRepository: repo}
+	ml := ms.FetchAllFromMySQL()
 	CreateJsonResponse(w, http.StatusOK, ml)
 }

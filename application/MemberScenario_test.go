@@ -1,10 +1,32 @@
 package application
 
 import (
+	"database/sql"
+	"github.com/nekochans/portfolio-backend/config"
 	"github.com/nekochans/portfolio-backend/domain"
+	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	"reflect"
 	"testing"
 )
+
+func createTestDB(t *testing.T) *sql.DB {
+	db, err := sql.Open("mysql", config.GetTestDsn())
+
+	if err != nil {
+		t.Fatal("DB Connect Error", err)
+	}
+
+	return db
+}
+
+func fixtureTestFetchAllFromMySQLSucceed(db *sql.DB) {
+	db.Exec("SET FOREIGN_KEY_CHECKS=0")
+	db.Exec("TRUNCATE members")
+	db.Exec("TRUNCATE members_github_users")
+	db.Exec("INSERT INTO members (id) VALUE (10)")
+	db.Exec("INSERT INTO members_github_users (id, member_id, github_id, avatar_url, cv_repo_name) VALUE (1, 10, 'keita', 'https://aaa.png', 'cv')")
+	db.Exec("SET FOREIGN_KEY_CHECKS=1")
+}
 
 func TestFetchAllFromMemorySucceed(t *testing.T) {
 	var expected domain.Members
@@ -31,6 +53,33 @@ func TestFetchAllFromMemorySucceed(t *testing.T) {
 
 	ms := &MemberScenario{}
 	res := ms.FetchAll()
+
+	for i, member := range res.Items {
+		if reflect.DeepEqual(member, expected[i]) == false {
+			t.Error("\nActually: ", member, "\nExpected: ", expected[i])
+		}
+	}
+}
+
+func TestFetchAllFromMySQLSucceed(t *testing.T) {
+	db := createTestDB(t)
+	fixtureTestFetchAllFromMySQLSucceed(db)
+
+	repo := &repository.MySQLMemberRepository{DB: db}
+	ms := &MemberScenario{MemberRepository: repo}
+	res := ms.FetchAllFromMySQL()
+
+	var expected domain.Members
+
+	expected = append(
+		expected,
+		&domain.Member{
+			ID:             10,
+			GitHubUserName: "keita",
+			GitHubPicture:  "https://aaa.png",
+			CvURL:          "https://github.com/keita/cv",
+		},
+	)
 
 	for i, member := range res.Items {
 		if reflect.DeepEqual(member, expected[i]) == false {
