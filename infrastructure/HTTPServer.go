@@ -1,10 +1,12 @@
 package infrastructure
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/nekochans/portfolio-backend/config"
 	"log"
 	"net/http"
 	"time"
@@ -12,11 +14,19 @@ import (
 
 type Server struct {
 	router *chi.Mux
+	DB     *sql.DB
 }
 
 func NewServer() *Server {
 	return &Server{
 		router: chi.NewRouter(),
+	}
+}
+
+func NewServerWithMySQL(db *sql.DB) *Server {
+	return &Server{
+		router: chi.NewRouter(),
+		DB:     db,
 	}
 }
 
@@ -36,7 +46,7 @@ func (s *Server) Middleware() {
 
 // Router ルーティング設定
 func (s *Server) Router() {
-	h := NewHandler()
+	h := NewHandlerWithMySQL(s.DB)
 
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		type json struct {
@@ -57,10 +67,15 @@ func StartHTTPServer() {
 		env  = flag.String("env", "develop", "実行環境 (production, staging, develop)")
 	)
 	flag.Parse()
-	s := NewServer()
+	db, err := sql.Open("mysql", config.GetDsn())
+	if err != nil {
+		log.Fatal(db, "Unable to connect to MySQL server.")
+	}
+
+	s := NewServerWithMySQL(db)
 	s.Init(*env)
 	s.Middleware()
 	s.Router()
 	log.Println("Starting app")
-	http.ListenAndServe(fmt.Sprint(":", *port), s.router)
+	_ = http.ListenAndServe(fmt.Sprint(":", *port), s.router)
 }

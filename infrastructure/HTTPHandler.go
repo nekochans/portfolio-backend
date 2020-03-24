@@ -6,18 +6,21 @@ import (
 	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/application"
-	"github.com/nekochans/portfolio-backend/config"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
-	"log"
 	"net/http"
 	"strconv"
 )
 
 type Handler struct {
+	DB *sql.DB
 }
 
 func NewHandler() *Handler {
 	return &Handler{}
+}
+
+func NewHandlerWithMySQL(db *sql.DB) *Handler {
+	return &Handler{DB: db}
 }
 
 func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
@@ -31,11 +34,7 @@ func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
-	// TODO DBオブジェクトの生成場所は別の場所を検討する
-	db, err := sql.Open("mysql", config.GetDsn())
-	log.Println(db)
-	log.Println(err)
-	repo := &repository.MySQLMemberRepository{DB: db}
+	repo := &repository.MySQLMemberRepository{DB: h.DB}
 
 	ms := application.MemberScenario{MemberRepository: repo}
 	ml := ms.FetchAllFromMySQL()
