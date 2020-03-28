@@ -67,7 +67,7 @@ func TestFetchAllFromMySQLSucceed(t *testing.T) {
 
 	repo := &repository.MySQLMemberRepository{DB: db}
 	ms := &MemberScenario{MemberRepository: repo}
-	res := ms.FetchAllFromMySQL()
+	res, err := ms.FetchAllFromMySQL()
 
 	var expected domain.Members
 
@@ -80,6 +80,10 @@ func TestFetchAllFromMySQLSucceed(t *testing.T) {
 			CvURL:          "https://github.com/keita/cv",
 		},
 	)
+
+	if err != nil {
+		t.Error("\nActually: ", err, "\nExpected: ", expected)
+	}
 
 	for i, member := range res.Items {
 		if reflect.DeepEqual(member, expected[i]) == false {

@@ -37,6 +37,12 @@ func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MySQLMemberRepository{DB: h.DB}
 
 	ms := application.MemberScenario{MemberRepository: repo}
-	ml := ms.FetchAllFromMySQL()
+	ml, err := ms.FetchAllFromMySQL()
+
+	if err != nil {
+		CreateErrorResponse(w, 400, err)
+		return
+	}
+
 	CreateJsonResponse(w, http.StatusOK, ml)
 }

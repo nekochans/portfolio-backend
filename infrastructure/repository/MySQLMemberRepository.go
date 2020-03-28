@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/domain"
-	"log"
+	"golang.org/x/xerrors"
 )
 
 type MySQLMemberRepository struct {
@@ -34,17 +34,16 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 	`
 
 	stmt, err := m.DB.Prepare(sql)
-	// TODO 適切なエラー処理を行う
 	if err != nil {
-		log.Fatal(err)
+		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll DB.Prepare Error: %w", err)
 	}
 
 	defer stmt.Close()
 
 	rows, err := stmt.Query()
-	// TODO 適切なエラー処理を行う
+
 	if err != nil {
-		log.Fatal(err)
+		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll stmt.Query Error: %w", err)
 	}
 
 	var tableData FindAllTableData
@@ -61,10 +60,8 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 			},
 		)
 
-		// TODO 適切なエラー処理を行う
-		// TODO 値がnilの際のパターンを考慮する
 		if err != nil {
-			log.Fatal(err)
+			return nil, xerrors.Errorf("MySQLMemberRepository.FindAll rows.Scan Error: %w", err)
 		}
 	}
 

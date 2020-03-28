@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -22,7 +21,7 @@ func CreateJsonResponse(w http.ResponseWriter, status int, payload interface{}) 
 
 // respondError レスポンスとして返すエラーを生成する
 func CreateErrorResponse(w http.ResponseWriter, code int, err error) {
-	log.Printf("err: %v", err)
+	fmt.Printf("%+v\n", err)
 	if e, ok := err.(*HTTPError); ok {
 		CreateJsonResponse(w, e.Code, e)
 	} else if err != nil {
@@ -36,8 +35,8 @@ func CreateErrorResponse(w http.ResponseWriter, code int, err error) {
 
 // HTTPError エラー用
 type HTTPError struct {
-	Code    int
-	Message string
+	Code    int `json:"code"`
+	Message string `json:"message"`
 }
 
 func (he *HTTPError) Error() string {

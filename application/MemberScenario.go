@@ -2,7 +2,6 @@ package application
 
 import (
 	"github.com/nekochans/portfolio-backend/domain"
-	"log"
 )
 
 type MemberScenario struct {
@@ -39,13 +38,11 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	return &MemberFetchAllResponse{Items: ms}
 }
 
-func (m *MemberScenario) FetchAllFromMySQL() *MemberFetchAllResponse {
+func (m *MemberScenario) FetchAllFromMySQL() (*MemberFetchAllResponse, error) {
 	res, err := m.MemberRepository.FindAll()
-
-	// TODO ちゃんとしたエラー処理を追加する
 	if err != nil {
-		log.Println(err)
+		return nil, err
 	}
 
-	return &MemberFetchAllResponse{Items: res}
+	return &MemberFetchAllResponse{Items: res}, nil
 }
