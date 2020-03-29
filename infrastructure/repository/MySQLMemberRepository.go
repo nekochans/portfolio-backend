@@ -35,7 +35,8 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 
 	stmt, err := m.DB.Prepare(sql)
 	if err != nil {
-		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll DB.Prepare Error: %w", err)
+		appErr := &domain.BackendError{Msg: "DB.Prepare Error", Err: err}
+		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
 	}
 
 	defer stmt.Close()
@@ -43,7 +44,8 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 	rows, err := stmt.Query()
 
 	if err != nil {
-		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll stmt.Query Error: %w", err)
+		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: err}
+		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
 	}
 
 	var tableData FindAllTableData
@@ -61,7 +63,8 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 		)
 
 		if err != nil {
-			return nil, xerrors.Errorf("MySQLMemberRepository.FindAll rows.Scan Error: %w", err)
+			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
+			return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
 		}
 	}
 
