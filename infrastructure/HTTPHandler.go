@@ -40,7 +40,9 @@ func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
 	ml, err := ms.FetchAllFromMySQL()
 
 	if err != nil {
-		CreateErrorResponse(w, 400, err)
+		fmt.Printf("%+v\n", err)
+		hc := &HTTPErrorCreator{}
+		CreateErrorResponse(w, hc.CreateFromMsg(err.Error()))
 		return
 	}
 

@@ -20,22 +20,13 @@ func CreateJsonResponse(w http.ResponseWriter, status int, payload interface{}) 
 }
 
 // respondError レスポンスとして返すエラーを生成する
-func CreateErrorResponse(w http.ResponseWriter, code int, err error) {
-	fmt.Printf("%+v\n", err)
-	if e, ok := err.(*HTTPError); ok {
-		CreateJsonResponse(w, e.Code, e)
-	} else if err != nil {
-		he := HTTPError{
-			Code:    code,
-			Message: err.Error(),
-		}
-		CreateJsonResponse(w, code, he)
-	}
+func CreateErrorResponse(w http.ResponseWriter, he HTTPError) {
+	CreateJsonResponse(w, he.Code, he)
 }
 
 // HTTPError エラー用
 type HTTPError struct {
-	Code    int `json:"code"`
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
