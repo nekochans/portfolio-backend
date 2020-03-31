@@ -7,10 +7,10 @@ func (c *HTTPErrorCreator) CreateFromMsg(msg string) HTTPError {
 	message := "Internal Server Error"
 
 	m := map[string]int{
-		"MySQLMemberRepository.FindAll: DB.Prepare Error": 500,
-		"MySQLMemberRepository.FindAll: stmt.Query Error": 500,
-		"MySQLMemberRepository.FindAll: rows.Scan Error":  500,
-		"MySQLMemberRepository.FindAll: Not Found Error":  400,
+		"MySQLMemberRepository.FindAll: DB.Prepare Error":  500,
+		"MySQLMemberRepository.FindAll: stmt.Query Error":  500,
+		"MySQLMemberRepository.FindAll: rows.Scan Error":   500,
+		"MySQLMemberRepository.FindAll: Members Not Found": 400,
 	}
 
 	if m[msg] != 0 {
