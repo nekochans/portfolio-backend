@@ -20,7 +20,10 @@ func CreateJsonResponse(w http.ResponseWriter, status int, payload interface{}) 
 }
 
 // respondError レスポンスとして返すエラーを生成する
-func CreateErrorResponse(w http.ResponseWriter, he HTTPError) {
+func CreateErrorResponse(w http.ResponseWriter, err error) {
+	fmt.Printf("%+v\n", err)
+	hc := &HTTPErrorCreator{}
+	he := hc.CreateFromMsg(err.Error())
 	CreateJsonResponse(w, he.Code, he)
 }
 
