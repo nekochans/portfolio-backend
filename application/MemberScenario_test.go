@@ -28,6 +28,13 @@ func fixtureTestFetchAllFromMySQLSucceed(db *sql.DB) {
 	db.Exec("SET FOREIGN_KEY_CHECKS=1")
 }
 
+func fixtureTestFetchAllFromMySQLFailureMembersNotFound(db *sql.DB) {
+	db.Exec("SET FOREIGN_KEY_CHECKS=0")
+	db.Exec("TRUNCATE members")
+	db.Exec("TRUNCATE members_github_users")
+	db.Exec("SET FOREIGN_KEY_CHECKS=1")
+}
+
 func TestFetchAllFromMemorySucceed(t *testing.T) {
 	var expected domain.Members
 
@@ -88,6 +95,26 @@ func TestFetchAllFromMySQLSucceed(t *testing.T) {
 	for i, member := range res.Items {
 		if reflect.DeepEqual(member, expected[i]) == false {
 			t.Error("\nActually: ", member, "\nExpected: ", expected[i])
+		}
+	}
+}
+
+func TestFetchAllFromMySQLFailureMembersNotFound(t *testing.T) {
+	db := createTestDB(t)
+	fixtureTestFetchAllFromMySQLFailureMembersNotFound(db)
+
+	repo := &repository.MySQLMemberRepository{DB: db}
+	ms := &MemberScenario{MemberRepository: repo}
+	res, err := ms.FetchAllFromMySQL()
+	expected := "MySQLMemberRepository.FindAll: Members Not Found"
+
+	if res != nil {
+		t.Error("\nActually: ", res, "\nExpected: ", expected)
+	}
+
+	if err != nil {
+		if err.Error() != expected {
+			t.Error("\nActually: ", err.Error(), "\nExpected: ", expected)
 		}
 	}
 }
