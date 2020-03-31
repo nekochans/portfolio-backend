@@ -22,6 +22,22 @@ export GCP_PROJECT_ID=作成したGCPのProjectID
 
 `./docker-compose-up-debug.sh`
 
+### マイグレーションの実行
+
+`docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
+
+`/go/app` で以下を実行します。
+
+```
+# データベースにマイグレーションの実行
+migrate -source file://./_sql -database 'mysql://nekochans:nekochans(Password2222)@tcp(portfolio-backend-mysql:3306)/portfolio_backend' up
+
+# テスト用のデータベースにマイグレーションの実行
+migrate -source file://./_sql -database 'mysql://nekochans_test:nekochans(Password2222)@tcp(portfolio-backend-mysql:3306)/portfolio_backend_test' up
+```
+
+詳しくは [migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate) のドキュメントを参照して下さい。
+
 ## Docker Hubに反映する
 
 `docker-push.sh` を実行して下さい。

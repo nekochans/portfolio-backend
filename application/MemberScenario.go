@@ -1,8 +1,11 @@
 package application
 
-import "github.com/nekochans/portfolio-backend/domain"
+import (
+	"github.com/nekochans/portfolio-backend/domain"
+)
 
 type MemberScenario struct {
+	MemberRepository domain.MemberRepository
 }
 
 type MemberFetchAllResponse struct {
@@ -33,4 +36,13 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	)
 
 	return &MemberFetchAllResponse{Items: ms}
+}
+
+func (m *MemberScenario) FetchAllFromMySQL() (*MemberFetchAllResponse, error) {
+	res, err := m.MemberRepository.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return &MemberFetchAllResponse{Items: res}, nil
 }
