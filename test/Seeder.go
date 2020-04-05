@@ -24,10 +24,6 @@ func (s *Seeder) Execute() error {
 		return err
 	}
 
-	tx.Exec("SET FOREIGN_KEY_CHECKS=0")
-	tx.Exec("TRUNCATE members")
-	tx.Exec("TRUNCATE members_github_users")
-
 	for _, file := range files {
 		ext := filepath.Ext(file.Name())
 		if ext != ".csv" {
@@ -42,8 +38,6 @@ func (s *Seeder) Execute() error {
 			return err
 		}
 	}
-
-	tx.Exec("SET FOREIGN_KEY_CHECKS=1")
 
 	return tx.Commit()
 }
