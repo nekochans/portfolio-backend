@@ -31,6 +31,9 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 		  members_github_users AS mgu
 		ON
 		  m.id = mgu.member_id
+		ORDER BY
+			m.id
+		ASC
 	`
 
 	stmt, err := m.DB.Prepare(sql)
