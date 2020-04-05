@@ -48,6 +48,39 @@ func (s *Seeder) Execute() error {
 	return tx.Commit()
 }
 
+func (s *Seeder) TruncateAllTable() error {
+	tx, err := s.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=0")
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = tx.Exec("TRUNCATE members")
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = tx.Exec("TRUNCATE members_github_users")
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=1")
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}
+
 func loadDataFromCSV(tx *sql.Tx, table, filePath string) (sql.Result, error) {
 	s := `
 		LOAD DATA
