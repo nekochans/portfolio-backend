@@ -5,6 +5,8 @@ import (
 	"github.com/nekochans/portfolio-backend/config"
 	"github.com/nekochans/portfolio-backend/domain"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
+	"github.com/nekochans/portfolio-backend/test"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -19,20 +21,30 @@ func createTestDB(t *testing.T) *sql.DB {
 	return db
 }
 
-func fixtureTestFetchAllFromMySQLSucceed(db *sql.DB) {
-	db.Exec("SET FOREIGN_KEY_CHECKS=0")
-	db.Exec("TRUNCATE members")
-	db.Exec("TRUNCATE members_github_users")
-	db.Exec("INSERT INTO members (id) VALUE (10)")
-	db.Exec("INSERT INTO members_github_users (id, member_id, github_id, avatar_url, cv_repo_name) VALUE (1, 10, 'keita', 'https://aaa.png', 'cv')")
-	db.Exec("SET FOREIGN_KEY_CHECKS=1")
+func fixtureTestFetchAllFromMySQLSucceed(t *testing.T, db *sql.DB) {
+	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
+	if err != nil {
+		t.Fatal("fixtureTestFetchAllFromMySQLSucceed Error", err)
+	}
+
+	seeder := &test.Seeder{DB: db, DirPath: testDataDir}
+	err = seeder.TruncateAllTable()
+	if err != nil {
+		t.Fatal("fixtureTestFetchAllFromMySQLSucceed Error", err)
+	}
+
+	err = seeder.Execute()
+	if err != nil {
+		t.Fatal("fixtureTestFetchAllFromMySQLSucceed Error", err)
+	}
 }
 
-func fixtureTestFetchAllFromMySQLFailureMembersNotFound(db *sql.DB) {
-	db.Exec("SET FOREIGN_KEY_CHECKS=0")
-	db.Exec("TRUNCATE members")
-	db.Exec("TRUNCATE members_github_users")
-	db.Exec("SET FOREIGN_KEY_CHECKS=1")
+func fixtureTestFetchAllFromMySQLFailureMembersNotFound(t *testing.T, db *sql.DB) {
+	seeder := &test.Seeder{DB: db}
+	err := seeder.TruncateAllTable()
+	if err != nil {
+		t.Fatal("fixtureTestFetchAllFromMySQLFailureMembersNotFound Error", err)
+	}
 }
 
 func TestFetchAllFromMemorySucceed(t *testing.T) {
@@ -70,7 +82,7 @@ func TestFetchAllFromMemorySucceed(t *testing.T) {
 
 func TestFetchAllFromMySQLSucceed(t *testing.T) {
 	db := createTestDB(t)
-	fixtureTestFetchAllFromMySQLSucceed(db)
+	fixtureTestFetchAllFromMySQLSucceed(t, db)
 
 	repo := &repository.MySQLMemberRepository{DB: db}
 	ms := &MemberScenario{MemberRepository: repo}
@@ -85,6 +97,12 @@ func TestFetchAllFromMySQLSucceed(t *testing.T) {
 			GitHubUserName: "keita",
 			GitHubPicture:  "https://aaa.png",
 			CvURL:          "https://github.com/keita/cv",
+		},
+		&domain.Member{
+			ID:             20,
+			GitHubUserName: "moko-cat",
+			GitHubPicture:  "https://neko.jpeg",
+			CvURL:          "https://github.com/moko-cat/resume",
 		},
 	)
 
@@ -101,7 +119,7 @@ func TestFetchAllFromMySQLSucceed(t *testing.T) {
 
 func TestFetchAllFromMySQLFailureMembersNotFound(t *testing.T) {
 	db := createTestDB(t)
-	fixtureTestFetchAllFromMySQLFailureMembersNotFound(db)
+	fixtureTestFetchAllFromMySQLFailureMembersNotFound(t, db)
 
 	repo := &repository.MySQLMemberRepository{DB: db}
 	ms := &MemberScenario{MemberRepository: repo}
