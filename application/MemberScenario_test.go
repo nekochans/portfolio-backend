@@ -21,6 +21,24 @@ func createTestDB(t *testing.T) *sql.DB {
 	return db
 }
 
+func fixtureTestFetchFromMySQLSucceed(t *testing.T, db *sql.DB) {
+	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchfrommysql/succeed")
+	if err != nil {
+		t.Fatal("fixtureTestFetchFromMySQLSucceed Error", err)
+	}
+
+	seeder := &test.Seeder{DB: db, DirPath: testDataDir}
+	err = seeder.TruncateAllTable()
+	if err != nil {
+		t.Fatal("fixtureTestFetchFromMySQLSucceed Error", err)
+	}
+
+	err = seeder.Execute()
+	if err != nil {
+		t.Fatal("fixtureTestFetchFromMySQLSucceed Error", err)
+	}
+}
+
 func fixtureTestFetchAllFromMySQLSucceed(t *testing.T, db *sql.DB) {
 	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
 	if err != nil {
@@ -44,6 +62,32 @@ func fixtureTestFetchAllFromMySQLFailureMembersNotFound(t *testing.T, db *sql.DB
 	err := seeder.TruncateAllTable()
 	if err != nil {
 		t.Fatal("fixtureTestFetchAllFromMySQLFailureMembersNotFound Error", err)
+	}
+}
+
+func TestFetchFromMySQLSucceed(t *testing.T) {
+	db := createTestDB(t)
+	fixtureTestFetchFromMySQLSucceed(t, db)
+
+	expected := &domain.Member{
+		ID:             1,
+		GitHubUserName: "keitakn",
+		GitHubPicture:  "https://avatars3.githubusercontent.com/u/11032365",
+		CvURL:          "https://github.com/keitakn/cv",
+	}
+
+	repo := &repository.MySQLMemberRepository{DB: db}
+	ms := &MemberScenario{MemberRepository: repo}
+	req := &MemberFetchRequest{MemberID: 1}
+
+	res, err := ms.FetchFromMySQL(*req)
+
+	if err != nil {
+		t.Error("\nActually: ", err, "\nExpected: ", expected)
+	}
+
+	if reflect.DeepEqual(res, expected) == false {
+		t.Error("\nActually: ", res, "\nExpected: ", expected)
 	}
 }
 
