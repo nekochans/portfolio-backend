@@ -39,6 +39,14 @@ func fixtureTestFetchFromMySQLSucceed(t *testing.T, db *sql.DB) {
 	}
 }
 
+func fixtureTestFetchFromMySQLFailureMembersNotFound(t *testing.T, db *sql.DB) {
+	seeder := &test.Seeder{DB: db}
+	err := seeder.TruncateAllTable()
+	if err != nil {
+		t.Fatal("fixtureTestFetchFromMySQLFailureMembersNotFound Error", err)
+	}
+}
+
 func fixtureTestFetchAllFromMySQLSucceed(t *testing.T, db *sql.DB) {
 	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
 	if err != nil {
@@ -88,6 +96,28 @@ func TestFetchFromMySQLSucceed(t *testing.T) {
 
 	if reflect.DeepEqual(res, expected) == false {
 		t.Error("\nActually: ", res, "\nExpected: ", expected)
+	}
+}
+
+func TestFetchFromMySQLFailureMemberNotFound(t *testing.T) {
+	db := createTestDB(t)
+	fixtureTestFetchFromMySQLFailureMembersNotFound(t, db)
+
+	repo := &repository.MySQLMemberRepository{DB: db}
+	ms := &MemberScenario{MemberRepository: repo}
+	req := &MemberFetchRequest{MemberID: 99}
+
+	res, err := ms.FetchFromMySQL(*req)
+	expected := "MySQLMemberRepository.Find: Member Not Found"
+
+	if res != nil {
+		t.Error("\nActually: ", res, "\nExpected: ", expected)
+	}
+
+	if err != nil {
+		if err.Error() != expected {
+			t.Error("\nActually: ", err.Error(), "\nExpected: ", expected)
+		}
 	}
 }
 

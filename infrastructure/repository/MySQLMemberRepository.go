@@ -48,13 +48,13 @@ func (m *MySQLMemberRepository) Find(memberID int) (*domain.Member, error) {
 
 	err = stmt.QueryRow(memberID).Scan(&tableData.MemberID, &tableData.GitHubID, &tableData.AvatarURL, &tableData.CVRepoName)
 	if err != nil {
-		appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
-		return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
-	}
+		// この条件の時はデータが1件も存在しない
+		if err.Error() == "sql: no rows in result set" {
+			appErr := &domain.BackendError{Msg: "Member Not Found"}
+			return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
+		}
 
-	// この条件の時はデータが1件も存在しない
-	if tableData.MemberID == 0 {
-		appErr := &domain.BackendError{Msg: "Member Not Found"}
+		appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
 		return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
 	}
 
