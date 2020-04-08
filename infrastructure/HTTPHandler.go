@@ -28,6 +28,7 @@ func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MySQLMemberRepository{DB: h.DB}
 	ms := application.MemberScenario{MemberRepository: repo}
 
+	// TODO リクエストのバリデーションはどこかで実装する必要がある
 	req := &application.MemberFetchRequest{MemberID: id}
 	me, err := ms.FetchFromMySQL(*req)
 	if err != nil {
