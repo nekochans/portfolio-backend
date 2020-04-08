@@ -54,7 +54,7 @@ func (m *MySQLMemberRepository) Find(memberID int) (*domain.Member, error) {
 
 	// この条件の時はデータが1件も存在しない
 	if tableData.MemberID == 0 {
-		appErr := &domain.BackendError{Msg: "Members Not Found"}
+		appErr := &domain.BackendError{Msg: "Member Not Found"}
 		return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
 	}
 
