@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/application"
@@ -24,13 +23,19 @@ func NewHandlerWithMySQL(db *sql.DB) *Handler {
 }
 
 func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
-	type json struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
-	res := json{ID: id, Name: fmt.Sprint("name_", id)}
-	CreateJsonResponse(w, http.StatusOK, res)
+
+	repo := &repository.MySQLMemberRepository{DB: h.DB}
+	ms := application.MemberScenario{MemberRepository: repo}
+
+	req := &application.MemberFetchRequest{MemberID: id}
+	me, err := ms.FetchFromMySQL(*req)
+	if err != nil {
+		CreateErrorResponse(w, err)
+		return
+	}
+
+	CreateJsonResponse(w, http.StatusOK, me)
 }
 
 func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
