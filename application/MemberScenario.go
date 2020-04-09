@@ -8,6 +8,19 @@ type MemberScenario struct {
 	MemberRepository domain.MemberRepository
 }
 
+type MemberFetchRequest struct {
+	MemberID int
+}
+
+func (m *MemberScenario) FetchFromMySQL(req MemberFetchRequest) (*domain.Member, error) {
+	res, err := m.MemberRepository.Find(req.MemberID)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 type MemberFetchAllResponse struct {
 	Items domain.Members `json:"items"`
 }
