@@ -15,6 +15,7 @@ func Logger(l *zap.Logger) func(next http.Handler) http.Handler {
 
 			t1 := time.Now()
 			defer func() {
+				// TODO r.Bodyをログに出したほうが良さそう
 				l.Info("message",
 					zap.String("protocol", r.Proto),
 					zap.String("path", r.URL.Path),
