@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi/middleware"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -23,7 +24,9 @@ func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payl
 
 // respondError レスポンスとして返すエラーを生成する
 func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
-	fmt.Printf("%+v\n", err)
+	logger := CreateLogger()
+	logger.Error(err.Error(), zap.String("RequestID", middleware.GetReqID(r.Context())))
+
 	hc := &HTTPErrorCreator{}
 	he := hc.CreateFromMsg(err.Error())
 	CreateJsonResponse(w, r, he.Code, he)
