@@ -32,11 +32,11 @@ func (h *Handler) ShowMember(w http.ResponseWriter, r *http.Request) {
 	req := &application.MemberFetchRequest{MemberID: id}
 	me, err := ms.FetchFromMySQL(*req)
 	if err != nil {
-		CreateErrorResponse(w, err)
+		CreateErrorResponse(w, r, err)
 		return
 	}
 
-	CreateJsonResponse(w, http.StatusOK, me)
+	CreateJsonResponse(w, r, http.StatusOK, me)
 }
 
 func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
@@ -46,9 +46,9 @@ func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
 	ml, err := ms.FetchAllFromMySQL()
 
 	if err != nil {
-		CreateErrorResponse(w, err)
+		CreateErrorResponse(w, r, err)
 		return
 	}
 
-	CreateJsonResponse(w, http.StatusOK, ml)
+	CreateJsonResponse(w, r, http.StatusOK, ml)
 }

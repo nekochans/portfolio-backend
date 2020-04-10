@@ -3,10 +3,11 @@ package infrastructure
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-chi/chi/middleware"
 	"net/http"
 )
 
-func CreateJsonResponse(w http.ResponseWriter, status int, payload interface{}) {
+func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payload interface{}) {
 	res, err := json.MarshalIndent(payload, "", "    ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -15,16 +16,17 @@ func CreateJsonResponse(w http.ResponseWriter, status int, payload interface{}) 
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("X-Request-Id", middleware.GetReqID(r.Context()))
 	w.WriteHeader(status)
 	w.Write([]byte(res))
 }
 
 // respondError レスポンスとして返すエラーを生成する
-func CreateErrorResponse(w http.ResponseWriter, err error) {
+func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 	fmt.Printf("%+v\n", err)
 	hc := &HTTPErrorCreator{}
 	he := hc.CreateFromMsg(err.Error())
-	CreateJsonResponse(w, he.Code, he)
+	CreateJsonResponse(w, r, he.Code, he)
 }
 
 // HTTPError エラー用
