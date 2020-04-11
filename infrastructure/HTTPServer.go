@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/nekochans/portfolio-backend/config"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"time"
@@ -15,18 +16,21 @@ import (
 type Server struct {
 	router *chi.Mux
 	DB     *sql.DB
+	Logger *zap.Logger
 }
 
-func NewServer() *Server {
+func NewServer(logger *zap.Logger) *Server {
 	return &Server{
 		router: chi.NewRouter(),
+		Logger: logger,
 	}
 }
 
-func NewServerWithMySQL(db *sql.DB) *Server {
+func NewServerWithMySQL(db *sql.DB, logger *zap.Logger) *Server {
 	return &Server{
 		router: chi.NewRouter(),
 		DB:     db,
+		Logger: logger,
 	}
 }
 
@@ -39,7 +43,7 @@ func (s *Server) Init(env string) {
 // Middleware ミドルウェア
 func (s *Server) Middleware() {
 	s.router.Use(middleware.RequestID)
-	s.router.Use(middleware.Logger)
+	s.router.Use(Logger(s.Logger))
 	s.router.Use(middleware.Recoverer)
 	s.router.Use(middleware.Timeout(time.Second * 60))
 }
@@ -53,7 +57,7 @@ func (s *Server) Router() {
 			Message string `json:"message"`
 		}
 		res := json{Message: "I like cat. 🐱🐱"}
-		CreateJsonResponse(w, http.StatusOK, res)
+		CreateJsonResponse(w, r, http.StatusOK, res)
 	})
 	s.router.Route("/members", func(members chi.Router) {
 		members.Get("/{id}", h.ShowMember)
@@ -67,12 +71,16 @@ func StartHTTPServer() {
 		env  = flag.String("env", "develop", "実行環境 (production, staging, develop)")
 	)
 	flag.Parse()
+
+	logger := CreateLogger()
+	defer logger.Sync()
+
 	db, err := sql.Open("mysql", config.GetDsn())
 	if err != nil {
 		log.Fatal(db, "Unable to connect to MySQL server.")
 	}
 
-	s := NewServerWithMySQL(db)
+	s := NewServerWithMySQL(db, logger)
 	s.Init(*env)
 	s.Middleware()
 	s.Router()
