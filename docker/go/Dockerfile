@@ -21,6 +21,8 @@ ENV GO111MODULE on
 RUN set -eux && \
   go build -o portfolio-backend ./cmd/rest/main.go
 
+ENV CGO_ENABLED 0
+
 FROM alpine:3.11
 
 WORKDIR /app
