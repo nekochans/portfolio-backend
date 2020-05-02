@@ -52,3 +52,17 @@ func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
 
 	CreateJsonResponse(w, r, http.StatusOK, ml)
 }
+
+func (h *Handler) WebServiceList(w http.ResponseWriter, r *http.Request) {
+	repo := &repository.MySQLWebServiceRepository{DB: h.DB}
+
+	ws := &application.WebServiceScenario{WebServiceRepository: repo}
+
+	res, err := ws.FetchAllFromMySQL()
+	if err != nil {
+		CreateErrorResponse(w, r, err)
+		return
+	}
+
+	CreateJsonResponse(w, r, http.StatusOK, res)
+}
