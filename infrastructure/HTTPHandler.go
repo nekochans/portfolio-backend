@@ -52,3 +52,11 @@ func (h *Handler) MemberList(w http.ResponseWriter, r *http.Request) {
 
 	CreateJsonResponse(w, r, http.StatusOK, ml)
 }
+
+func (h *Handler) WebServiceList(w http.ResponseWriter, r *http.Request) {
+	ws := &application.WebServiceScenario{}
+
+	res := ws.FetchAll()
+
+	CreateJsonResponse(w, r, http.StatusOK, res)
+}

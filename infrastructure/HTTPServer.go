@@ -63,6 +63,10 @@ func (s *Server) Router() {
 		members.Get("/{id}", h.ShowMember)
 		members.Get("/", h.MemberList)
 	})
+
+	s.router.Route("/webservices", func(webServices chi.Router) {
+		webServices.Get("/", h.WebServiceList)
+	})
 }
 
 func StartHTTPServer() {
