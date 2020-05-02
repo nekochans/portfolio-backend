@@ -66,6 +66,12 @@ func (s *Seeder) TruncateAllTable() error {
 		return err
 	}
 
+	_, err = tx.Exec("TRUNCATE webservices")
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=1")
 	if err != nil {
 		tx.Rollback()
