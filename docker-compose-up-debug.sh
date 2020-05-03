@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cp .realize.debug.yaml .realize.yaml
+cp .air.debug.conf .air.conf
 
 docker-compose up --build -d
