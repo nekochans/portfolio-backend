@@ -19,6 +19,7 @@
 
 # output go build
 portfolio-backend
+tmp
 
 # realize Setting Files
 .realize.yaml

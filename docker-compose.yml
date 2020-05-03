@@ -8,7 +8,7 @@ services:
       target: build
     volumes:
       - ./:/go/app
-    command: realize start --run
+    command: air
     ports:
       - 8888:8888
       - 2345:2345
