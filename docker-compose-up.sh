@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cp .realize.normal.yaml .realize.yaml
+cp .air.normal.conf .air.conf
 
 docker-compose up --build -d

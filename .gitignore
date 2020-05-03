@@ -19,9 +19,10 @@
 
 # output go build
 portfolio-backend
+tmp
 
-# realize Setting Files
-.realize.yaml
+# Air(Live reload for Go apps) Setting Files
+.air.conf
 
 # goenv Setting Files
 .go-version
