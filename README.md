@@ -52,15 +52,17 @@ migrate -source file://./_sql -database 'mysql://nekochans_test:nekochans(Passwo
 
 ## ソースコードのフォーマット
 
-`go fmt` で行います。
+`docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
 
-`go fmt $(go list)/...` とすれば再帰的に実行されます。
+`make lint` を実行して下さい。
 
-`go fmt` は内部で `gofmt` を実行しています。
+内部でソースコードのフォーマットや内部
 
-`gofmt` は再帰的にファイルを探してくれるので `gofmt -l -s -w .` とするのがオススメです。
+## テストの実行
 
-※ ソースコードフォーマットに関しては後でスクリプト化します。
+`docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
+
+`make test` を実行します。
 
 ## データベース（MySQL）への接続方法
 
