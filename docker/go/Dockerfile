@@ -15,7 +15,8 @@ RUN set -eux && \
   chmod +x /go/bin/air && \
   go get -u github.com/go-delve/delve/cmd/dlv && \
   go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv && \
-  go get -tags 'mysql' -u github.com/golang-migrate/migrate/cmd/migrate
+  go get -tags 'mysql' -u github.com/golang-migrate/migrate/cmd/migrate && \
+  go get -u golang.org/x/lint/golint
 
 ENV GO111MODULE on
 
