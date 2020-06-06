@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
+	"log"
 	"net/http"
 )
 
@@ -12,14 +13,20 @@ func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payl
 	res, err := json.MarshalIndent(payload, "", "    ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Fatal(err, "http.ResponseWriter() Fatal.")
+		}
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("X-Request-Id", middleware.GetReqID(r.Context()))
 	w.WriteHeader(status)
-	w.Write([]byte(res))
+	_, err = w.Write([]byte(res))
+	if err != nil {
+		log.Fatal(err, "http.ResponseWriter() Fatal.")
+	}
 }
 
 // respondError レスポンスとして返すエラーを生成する

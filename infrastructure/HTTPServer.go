@@ -77,7 +77,12 @@ func StartHTTPServer() {
 	flag.Parse()
 
 	logger := CreateLogger()
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Fatal(err, "logger.Sync() Fatal.")
+		}
+	}()
 
 	db, err := sql.Open("mysql", config.GetDsn())
 	if err != nil {

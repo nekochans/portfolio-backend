@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 )
 
@@ -34,7 +35,10 @@ func (s *Seeder) Execute() error {
 		csvFilePath := filepath.Join(s.DirPath, file.Name())
 
 		if _, err := loadDataFromCSV(tx, table, csvFilePath); err != nil {
-			tx.Rollback()
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+			}
 			return err
 		}
 	}
@@ -50,31 +54,46 @@ func (s *Seeder) TruncateAllTable() error {
 
 	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=0")
 	if err != nil {
-		tx.Rollback()
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		}
 		return err
 	}
 
 	_, err = tx.Exec("TRUNCATE members")
 	if err != nil {
-		tx.Rollback()
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		}
 		return err
 	}
 
 	_, err = tx.Exec("TRUNCATE members_github_users")
 	if err != nil {
-		tx.Rollback()
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		}
 		return err
 	}
 
 	_, err = tx.Exec("TRUNCATE webservices")
 	if err != nil {
-		tx.Rollback()
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		}
 		return err
 	}
 
 	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=1")
 	if err != nil {
-		tx.Rollback()
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		}
 		return err
 	}
 
