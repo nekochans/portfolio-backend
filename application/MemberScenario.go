@@ -4,14 +4,17 @@ import (
 	"github.com/nekochans/portfolio-backend/domain"
 )
 
+// MemberScenario Member用のユースケース
 type MemberScenario struct {
 	MemberRepository domain.MemberRepository
 }
 
+// MemberFetchRequest Memberを取得する時のリクエスト型
 type MemberFetchRequest struct {
 	MemberID int
 }
 
+// FetchFromMySQL MySQLからMemberを取得する
 func (m *MemberScenario) FetchFromMySQL(req MemberFetchRequest) (*domain.Member, error) {
 	res, err := m.MemberRepository.Find(req.MemberID)
 	if err != nil {
@@ -21,10 +24,12 @@ func (m *MemberScenario) FetchFromMySQL(req MemberFetchRequest) (*domain.Member,
 	return res, nil
 }
 
+// MemberFetchAllResponse Member FetchAll Response
 type MemberFetchAllResponse struct {
 	Items domain.Members `json:"items"`
 }
 
+// FetchAll 全てのMemberを取得する
 func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	var ms domain.Members
 
@@ -51,6 +56,7 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	return &MemberFetchAllResponse{Items: ms}
 }
 
+// FetchAllFromMySQL 全てのMemberをMySQLから取得する
 func (m *MemberScenario) FetchAllFromMySQL() (*MemberFetchAllResponse, error) {
 	res, err := m.MemberRepository.FindAll()
 	if err != nil {
