@@ -56,7 +56,11 @@ migrate -source file://./_sql -database 'mysql://nekochans_test:nekochans(Passwo
 
 `make lint` を実行して下さい。
 
-内部でソースコードのフォーマットや内部
+lintのルール等は以下を参考にして下さい。
+
+https://golangci-lint.run/usage/linters/
+
+内部でソースコードのフォーマットも行っていますが、自動で修正されない物は自分で修正を行う必要があります。
 
 ## テストの実行
 
