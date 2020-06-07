@@ -24,8 +24,7 @@ jobs:
       - name: Docker set up
         run: |
           cp .air.normal.conf .air.conf
-          cp .env.ci .env
-          docker-compose -f docker-compose-ci.yml up --build -d
+          docker-compose up --build -d
       - name: Execute test
         run: |
           docker-compose exec -T go make lint
