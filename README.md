@@ -1,4 +1,6 @@
 # portfolio-backend
+![ci-master](https://github.com/nekochans/portfolio-backend/workflows/ci-master/badge.svg)
+
 GitHub Organization 「nekochans」の説明用Webサイトのバックエンド
 
 # 環境変数の設定
@@ -24,16 +26,15 @@ export GCP_PROJECT_ID=作成したGCPのProjectID
 
 ### マイグレーションの実行
 
-`docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
-
-`/go/app` で以下を実行します。
+各コンテナが起動した状態で以下を実行して下さい。
 
 ```
 # データベースにマイグレーションの実行
-migrate -source file://./_sql -database 'mysql://nekochans:nekochans(Password2222)@tcp(portfolio-backend-mysql:3306)/portfolio_backend' up
+docker-compose exec go make migrate-up
 
-# テスト用のデータベースにマイグレーションの実行
-migrate -source file://./_sql -database 'mysql://nekochans_test:nekochans(Password2222)@tcp(portfolio-backend-mysql:3306)/portfolio_backend_test' up
+# マイグレーションをロールバックする
+# Are you sure you want to apply all down migrations? [y/N] と2回聞かれるので y でEnterして下さい
+docker-compose exec go make migrate-down
 ```
 
 詳しくは [migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate) のドキュメントを参照して下さい。
