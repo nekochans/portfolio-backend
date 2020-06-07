@@ -27,6 +27,7 @@ jobs:
           docker-compose up --build -d
       - name: Execute test
         run: |
+          docker ps -a
           docker-compose exec -T go make lint
           docker-compose exec -T portfolio-backend-mysql service mysql status
           docker-compose exec -T go make migrate-up
