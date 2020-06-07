@@ -24,7 +24,8 @@ jobs:
       - name: Docker set up
         run: |
           cp .air.normal.conf .air.conf
-          docker-compose up --build -d
+          cp .env.ci .env
+          docker-compose -f docker-compose-ci.yml up -d
       - name: Execute test
         run: |
           docker ps -a
