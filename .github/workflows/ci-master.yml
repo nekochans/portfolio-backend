@@ -31,5 +31,6 @@ jobs:
           docker-compose exec -T go make lint
           docker-compose exec -T portfolio-backend-mysql service mysql status
           docker-compose exec -T go printenv
+          docker-compose exec -T portfolio-backend-mysql printenv
           docker-compose exec -T go make migrate-up
           docker-compose exec -T go make test
