@@ -1,10 +1,10 @@
-DB_USER          := ${DB_USER}
-DB_PASSWORD      := ${DB_PASSWORD}
-DB_NAME          := ${DB_NAME}
-DB_HOST          := ${DB_HOST}
-TEST_DB_USER     := ${TEST_DB_USER}
-TEST_DB_PASSWORD := ${TEST_DB_PASSWORD}
-TEST_DB_NAME     := ${TEST_DB_NAME}
+# DB_USER          := ${DB_USER}
+# DB_PASSWORD      := ${DB_PASSWORD}
+# DB_NAME          := ${DB_NAME}
+# DB_HOST          := ${DB_HOST}
+# TEST_DB_USER     := ${TEST_DB_USER}
+# TEST_DB_PASSWORD := ${TEST_DB_PASSWORD}
+# TEST_DB_NAME     := ${TEST_DB_NAME}
 
 .PHONY: migrate-up migrate-down lint test
 migrate-up:
