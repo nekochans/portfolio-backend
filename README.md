@@ -1,4 +1,6 @@
 # portfolio-backend
+![ci-master](https://github.com/nekochans/portfolio-backend/workflows/ci-master/badge.svg)
+
 GitHub Organization 「nekochans」の説明用Webサイトのバックエンド
 
 # 環境変数の設定
