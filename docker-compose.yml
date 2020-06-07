@@ -45,6 +45,6 @@ services:
       - "63306:3306"
     volumes:
       - portfolio-backend-mysql-data:/var/lib/mysql
-      - ./docker/mysql/initial.sql:/docker-entrypoint-initdb.d/initial.sql
+      - ./docker/mysql:/docker-entrypoint-initdb.d
 volumes:
   portfolio-backend-mysql-data:
