@@ -22,13 +22,20 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
       - name: Docker set up
+        env:
+          DB_USER: ${secrets.DB_USER}
+          DB_PASSWORD: ${secrets.DB_PASSWORD}
+          DB_NAME: ${secrets.DB_NAME}
+          DB_HOST: ${secrets.DB_HOST}
+          TEST_DB_USER: ${secrets.TEST_DB_USER}
+          TEST_DB_PASSWORD: ${secrets.TEST_DB_PASSWORD}
+          TEST_DB_NAME: ${secrets.TEST_DB_NAME}
         run: |
           cp .air.normal.conf .air.conf
           cp .env.ci .env
           docker-compose -f docker-compose-ci.yml up --build -d
       - name: Execute test
         run: |
-          docker ps -a
           docker-compose exec -T go make lint
           docker-compose exec -T portfolio-backend-mysql service mysql status
           docker-compose exec -T go make migrate-up
