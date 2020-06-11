@@ -1,4 +1,4 @@
-.PHONY: migrate-up migrate-down lint test
+.PHONY: migrate-up migrate-down lint test test-ci
 
 migrate-up:
 	@migrate -source file://./_sql -database 'mysql://$(DB_USER):$(DB_PASSWORD)@tcp($(DB_HOST):3306)/$(DB_NAME)' up
@@ -12,3 +12,5 @@ lint:
 	@golangci-lint run ./...
 test:
 	@go test -v ./...
+test-ci:
+	@go test -v -coverprofile coverage.out -covermode atomic ./...
