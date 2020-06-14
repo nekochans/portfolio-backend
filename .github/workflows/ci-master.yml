@@ -1,9 +1,10 @@
 name: ci-master
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 env:
   DB_USER: ${{ secrets.DB_USER }}
