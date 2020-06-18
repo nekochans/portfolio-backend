@@ -9,9 +9,17 @@ GitHub Organization 「nekochans」の説明用Webサイトのバックエンド
 以下の環境変数を設定する必要があります。
 
 ```
-export GO111MODULE=on
-export GCP_PROJECT_ID=作成したGCPのProjectID
+export GCP_PROJECT_ID="作成したGCPのProjectID"
+export DB_USER="nekochans"
+export DB_PASSWORD="nekochans(Password2222)"
+export DB_NAME="portfolio_backend"
+export DB_HOST="portfolio-backend-mysql"
+export TEST_DB_USER="nekochans_test"
+export TEST_DB_PASSWORD="nekochans(Password2222)"
+export TEST_DB_NAME="portfolio_backend_test"
 ```
+
+これらのパスワードは本番のDBでは決して利用しないで下さい。
 
 [direnv](https://github.com/direnv/direnv) 等を利用すると良いでしょう。
 
@@ -58,6 +66,8 @@ docker-compose exec go make migrate-down
 
 `make lint` を実行して下さい。
 
+もしくは `docker-compose exec go make lint` でも実行出来ます。
+
 lintのルール等は以下を参考にして下さい。
 
 https://golangci-lint.run/usage/linters/
@@ -69,6 +79,8 @@ https://golangci-lint.run/usage/linters/
 `docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
 
 `make test` を実行します。
+
+もしくは `docker-compose exec go make test` でもテストを実行出来ます。
 
 ## データベース（MySQL）への接続方法
 
