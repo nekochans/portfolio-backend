@@ -66,6 +66,8 @@ docker-compose exec go make migrate-down
 
 `make lint` を実行して下さい。
 
+もしくは `docker-compose exec go make lint` でも実行出来ます。
+
 lintのルール等は以下を参考にして下さい。
 
 https://golangci-lint.run/usage/linters/
@@ -77,6 +79,8 @@ https://golangci-lint.run/usage/linters/
 `docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
 
 `make test` を実行します。
+
+もしくは `docker-compose exec go make test` でもテストを実行出来ます。
 
 ## データベース（MySQL）への接続方法
 
