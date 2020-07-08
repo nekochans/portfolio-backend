@@ -91,3 +91,16 @@ mysql -u root -h 127.0.0.1 -p -P 63306
 ```
 
 本番環境ではMySQLではなく、AWS、GCPのマネージドサービスを利用します。
+
+## OpenAPIスキーマの更新
+
+APIはスキーマ駆動で開発を行っています。
+
+スキーマは [こちら](https://github.com/nekochans/nekochans-openapi/blob/master/docs/portfolio/openapi.yaml) で管理されています。
+
+スキーマの更新があった場合以下のコマンドでインターフェースの更新を行う必要があります。
+
+```
+oapi-codegen -generate types docs/openapi/docs/portfolio/openapi.yaml > infrastructure/openapi/Model.gen.go && \
+oapi-codegen -generate chi-server docs/openapi/docs/portfolio/openapi.yaml > infrastructure/openapi/Server.gen.go && \
+```
