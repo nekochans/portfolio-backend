@@ -100,7 +100,9 @@ APIはスキーマ駆動で開発を行っています。
 
 スキーマの更新があった場合以下のコマンドでインターフェースの更新を行う必要があります。
 
+`docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
+
 ```
-oapi-codegen -generate types docs/openapi/docs/portfolio/openapi.yaml > infrastructure/openapi/Model.gen.go && \
-oapi-codegen -generate chi-server docs/openapi/docs/portfolio/openapi.yaml > infrastructure/openapi/Server.gen.go && \
+oapi-codegen -generate types docs/openapi/docs/portfolio/openapi.yaml > infrastructure/openapi/Model.gen.go
+oapi-codegen -generate chi-server docs/openapi/docs/portfolio/openapi.yaml > infrastructure/openapi/Server.gen.go
 ```
