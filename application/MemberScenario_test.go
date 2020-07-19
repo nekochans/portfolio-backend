@@ -64,7 +64,7 @@ func fixtureTestMemberScenarioFetchAllFromMySQLFailureMembersNotFound(t *testing
 }
 
 func TestMemberScenarioFetchFromMySQLSucceed(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
 	fixtureTestMemberScenarioFetchFromMySQLSucceed(t, db)
 
@@ -75,11 +75,11 @@ func TestMemberScenarioFetchFromMySQLSucceed(t *testing.T) {
 		CvUrl:          "https://github.com/keitakn/cv",
 	}
 
-	repo := &repository.MySQLMemberRepository{DB: db}
+	repo := &repository.MysqlMemberRepository{Db: db}
 	ms := &MemberScenario{MemberRepository: repo}
 	req := &MemberFetchRequest{Id: 1}
 
-	res, err := ms.FetchFromMySQL(*req)
+	res, err := ms.FetchFromMysql(*req)
 
 	if err != nil {
 		t.Error("\nActually: ", err, "\nExpected: ", expected)
@@ -91,16 +91,16 @@ func TestMemberScenarioFetchFromMySQLSucceed(t *testing.T) {
 }
 
 func TestMemberScenarioFetchFromMySQLFailureMemberNotFound(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
 	fixtureTestMemberScenarioFetchFromMySQLFailureMembersNotFound(t, db)
 
-	repo := &repository.MySQLMemberRepository{DB: db}
+	repo := &repository.MysqlMemberRepository{Db: db}
 	ms := &MemberScenario{MemberRepository: repo}
 	req := &MemberFetchRequest{Id: 99}
 
-	res, err := ms.FetchFromMySQL(*req)
-	expected := "MySQLMemberRepository.Find: Member Not Found"
+	res, err := ms.FetchFromMysql(*req)
+	expected := "MysqlMemberRepository.Find: Member Not Found"
 
 	if res != nil {
 		t.Error("\nActually: ", res, "\nExpected: ", expected)
@@ -147,13 +147,13 @@ func TestMemberScenarioFetchAllMemorySucceed(t *testing.T) {
 }
 
 func TestMemberScenarioFetchAllFromMySQLSucceed(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
 	fixtureTestMemberScenarioFetchAllFromMySQLSucceed(t, db)
 
-	repo := &repository.MySQLMemberRepository{DB: db}
+	repo := &repository.MysqlMemberRepository{Db: db}
 	ms := &MemberScenario{MemberRepository: repo}
-	res, err := ms.FetchAllFromMySQL()
+	res, err := ms.FetchAllFromMysql()
 
 	var expected domain.Members
 
@@ -185,14 +185,14 @@ func TestMemberScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 }
 
 func TestMemberScenarioFetchAllFromMySQLFailureMembersNotFound(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
 	fixtureTestMemberScenarioFetchAllFromMySQLFailureMembersNotFound(t, db)
 
-	repo := &repository.MySQLMemberRepository{DB: db}
+	repo := &repository.MysqlMemberRepository{Db: db}
 	ms := &MemberScenario{MemberRepository: repo}
-	res, err := ms.FetchAllFromMySQL()
-	expected := "MySQLMemberRepository.FindAll: Members Not Found"
+	res, err := ms.FetchAllFromMysql()
+	expected := "MysqlMemberRepository.FindAll: Members Not Found"
 
 	if res != nil {
 		t.Error("\nActually: ", res, "\nExpected: ", expected)

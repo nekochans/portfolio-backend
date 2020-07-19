@@ -60,13 +60,13 @@ func fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t 
 }
 
 func TestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
 	fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed(t, db)
 
-	repo := &repository.MySQLWebServiceRepository{DB: db}
+	repo := &repository.MysqlWebServiceRepository{Db: db}
 	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMySQL()
+	res, err := ws.FetchAllFromMysql()
 
 	var expected domain.WebServices
 
@@ -91,14 +91,14 @@ func TestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 }
 
 func TestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
 	fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t, db)
 
-	repo := &repository.MySQLWebServiceRepository{DB: db}
+	repo := &repository.MysqlWebServiceRepository{Db: db}
 	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMySQL()
-	expected := "MySQLWebServiceRepository.FindAll: WebServices Not Found"
+	res, err := ws.FetchAllFromMysql()
+	expected := "MysqlWebServiceRepository.FindAll: WebServices Not Found"
 
 	if res != nil {
 		t.Error("\nActually: ", res, "\nExpected: ", expected)

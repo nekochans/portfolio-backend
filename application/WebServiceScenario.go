@@ -28,7 +28,7 @@ func (w *WebServiceScenario) FetchAll() *WebServiceFetchAllResponse {
 	return &WebServiceFetchAllResponse{Items: ws}
 }
 
-func (w *WebServiceScenario) FetchAllFromMySQL() (*WebServiceFetchAllResponse, error) {
+func (w *WebServiceScenario) FetchAllFromMysql() (*WebServiceFetchAllResponse, error) {
 	res, err := w.WebServiceRepository.FindAll()
 	if err != nil {
 		return nil, err

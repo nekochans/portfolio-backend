@@ -24,10 +24,10 @@ type ServerImpl struct {
 }
 
 func(si *ServerImpl) GetMembers(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MySQLMemberRepository{DB: si.DB}
+	repo := &repository.MysqlMemberRepository{Db: si.DB}
 
 	ms := application.MemberScenario{MemberRepository: repo}
-	ml, err := ms.FetchAllFromMySQL()
+	ml, err := ms.FetchAllFromMysql()
 
 	if err != nil {
 		CreateErrorResponse(w, r, err)
@@ -42,11 +42,11 @@ func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
 
 	id := r.Context().Value("id").(int)
 
-	repo := &repository.MySQLMemberRepository{DB: si.DB}
+	repo := &repository.MysqlMemberRepository{Db: si.DB}
 	ms := application.MemberScenario{MemberRepository: repo}
 
 	req := &application.MemberFetchRequest{Id: id}
-	me, err := ms.FetchFromMySQL(*req)
+	me, err := ms.FetchFromMysql(*req)
 	if err != nil {
 		CreateErrorResponse(w, r, err)
 		return
@@ -56,11 +56,11 @@ func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
 }
 
 func(si *ServerImpl) GetWebservices(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MySQLWebServiceRepository{DB: si.DB}
+	repo := &repository.MysqlWebServiceRepository{Db: si.DB}
 
 	ws := &application.WebServiceScenario{WebServiceRepository: repo}
 
-	res, err := ws.FetchAllFromMySQL()
+	res, err := ws.FetchAllFromMysql()
 	if err != nil {
 		CreateErrorResponse(w, r, err)
 		return

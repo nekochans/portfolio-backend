@@ -8,8 +8,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type MySQLMemberRepository struct {
-	DB *sql.DB
+type MysqlMemberRepository struct {
+	Db *sql.DB
 }
 
 type FindTableData struct {
@@ -19,7 +19,7 @@ type FindTableData struct {
 	CvRepoName string
 }
 
-func (m *MySQLMemberRepository) Find(id int) (*Openapi.Member, error) {
+func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	sql := `
 		SELECT
 		  m.id AS Id,
@@ -36,11 +36,11 @@ func (m *MySQLMemberRepository) Find(id int) (*Openapi.Member, error) {
 			m.id = ?
 	`
 
-	stmt, err := m.DB.Prepare(sql)
+	stmt, err := m.Db.Prepare(sql)
 
 	if err != nil {
-		appErr := &domain.BackendError{Msg: "DB.Prepare Error", Err: err}
-		return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
+		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: err}
+		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
 	}
 
 	defer stmt.Close()
@@ -52,11 +52,11 @@ func (m *MySQLMemberRepository) Find(id int) (*Openapi.Member, error) {
 		// この条件の時はデータが1件も存在しない
 		if err.Error() == "sql: no rows in result set" {
 			appErr := &domain.BackendError{Msg: "Member Not Found"}
-			return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
+			return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
 		}
 
 		appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
-		return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
+		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
 	}
 
 	me := &Openapi.Member{
@@ -76,7 +76,7 @@ type FindAllTableData struct {
 	CvRepoName string
 }
 
-func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
+func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 	sql := `
 		SELECT
 		  m.id AS Id,
@@ -94,10 +94,10 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 		ASC
 	`
 
-	stmt, err := m.DB.Prepare(sql)
+	stmt, err := m.Db.Prepare(sql)
 	if err != nil {
-		appErr := &domain.BackendError{Msg: "DB.Prepare Error", Err: err}
-		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
+		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: err}
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 	}
 
 	defer stmt.Close()
@@ -106,7 +106,7 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 
 	if err != nil {
 		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: err}
-		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 	}
 
 	var tableData FindAllTableData
@@ -125,14 +125,14 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 
 		if err != nil {
 			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
-			return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
+			return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 		}
 	}
 
 	// この条件の時はデータが1件も存在しない
 	if tableData.Id == 0 {
 		appErr := &domain.BackendError{Msg: "Members Not Found"}
-		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 	}
 
 	return ms, nil

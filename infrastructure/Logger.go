@@ -20,9 +20,9 @@ func Logger(l *zap.Logger) func(next http.Handler) http.Handler {
 					zap.String("protocol", r.Proto),
 					zap.String("path", r.URL.Path),
 					zap.Duration("lat", time.Since(t1)),
-					zap.Int("HTTPStatus", ww.Status()),
+					zap.Int("HttpStatus", ww.Status()),
 					zap.Int("size", ww.BytesWritten()),
-					zap.String("RequestID", middleware.GetReqID(r.Context())))
+					zap.String("RequestId", middleware.GetReqID(r.Context())))
 			}()
 
 			next.ServeHTTP(ww, r)

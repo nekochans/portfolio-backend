@@ -32,7 +32,7 @@ func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payl
 // respondError レスポンスとして返すエラーを生成する
 func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 	logger := CreateLogger()
-	logger.Error(err.Error(), zap.String("RequestID", middleware.GetReqID(r.Context())))
+	logger.Error(err.Error(), zap.String("RequestId", middleware.GetReqID(r.Context())))
 
 	hc := &HTTPErrorCreator{}
 	he := hc.CreateFromMsg(err.Error())

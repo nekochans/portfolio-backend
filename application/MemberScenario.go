@@ -13,7 +13,7 @@ type MemberFetchRequest struct {
 	Id int
 }
 
-func (m *MemberScenario) FetchFromMySQL(req MemberFetchRequest) (*Openapi.Member, error) {
+func (m *MemberScenario) FetchFromMysql(req MemberFetchRequest) (*Openapi.Member, error) {
 	res, err := m.MemberRepository.Find(req.Id)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	return &MemberFetchAllResponse{Items: ms}
 }
 
-func (m *MemberScenario) FetchAllFromMySQL() (*MemberFetchAllResponse, error) {
+func (m *MemberScenario) FetchAllFromMysql() (*MemberFetchAllResponse, error) {
 	res, err := m.MemberRepository.FindAll()
 	if err != nil {
 		return nil, err
