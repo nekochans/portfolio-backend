@@ -102,7 +102,17 @@ APIはスキーマ駆動で開発を行っています。
 
 `docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
 
+以下を実行します。
+
 ```
 oapi-codegen -generate types docs/openapi/docs/portfolio/openapi.yaml > openapi/Model.gen.go
 oapi-codegen -generate chi-server docs/openapi/docs/portfolio/openapi.yaml > openapi/Server.gen.go
 ```
+
+生成されたコードという事が分かるように `.gen.go` という拡張子にしています。
+
+エディタによってはコードを変更しようとすると警告が出るようになります。
+
+生成されたコードを手動で直すのは原則として禁止です。
+
+ただしコミットする前に `make lint` で整形を行って下さい。
