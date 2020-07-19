@@ -100,6 +100,12 @@ APIはスキーマ駆動で開発を行っています。
 
 スキーマの更新があった場合以下のコマンドでインターフェースの更新を行う必要があります。
 
+まずは以下の更新でGitのサブモジュールとして登録されている `openapi.yaml` を更新します。
+
+```
+git submodule update --recursive --remote
+```
+
 `docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
 
 以下を実行します。
