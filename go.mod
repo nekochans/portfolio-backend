@@ -3,6 +3,7 @@ module github.com/nekochans/portfolio-backend
 go 1.14
 
 require (
+	github.com/deepmap/oapi-codegen v1.3.8
 	github.com/go-chi/chi v4.0.3+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	go.uber.org/zap v1.14.1
