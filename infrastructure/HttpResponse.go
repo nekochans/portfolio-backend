@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
 	"log"
@@ -34,17 +33,7 @@ func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 	logger := CreateLogger()
 	logger.Error(err.Error(), zap.String("RequestId", middleware.GetReqID(r.Context())))
 
-	hc := &HTTPErrorCreator{}
+	hc := &OpenApiErrorCreator{}
 	he := hc.CreateFromMsg(err.Error())
 	CreateJsonResponse(w, r, he.Code, he)
-}
-
-// HTTPError エラー用
-type HTTPError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
-func (he *HTTPError) Error() string {
-	return fmt.Sprintf("code=%d, message=%v", he.Code, he.Message)
 }

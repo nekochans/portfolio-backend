@@ -1,8 +1,10 @@
 package infrastructure
 
-type HTTPErrorCreator struct{}
+import Openapi "github.com/nekochans/portfolio-backend/openapi"
 
-func (c *HTTPErrorCreator) CreateFromMsg(msg string) HTTPError {
+type OpenApiErrorCreator struct{}
+
+func (c *OpenApiErrorCreator) CreateFromMsg(msg string) Openapi.Error {
 	code := 500
 	message := "Internal Server Error"
 
@@ -17,7 +19,7 @@ func (c *HTTPErrorCreator) CreateFromMsg(msg string) HTTPError {
 		message = msg
 	}
 
-	he := HTTPError{
+	he := Openapi.Error{
 		Code:    code,
 		Message: message,
 	}
