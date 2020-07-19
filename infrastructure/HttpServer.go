@@ -23,7 +23,7 @@ type HttpServer struct {
 	Logger      *zap.Logger
 }
 
-func(hs *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
+func (hs *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MysqlMemberRepository{Db: hs.Db}
 
 	ms := application.MemberScenario{MemberRepository: repo}
@@ -37,7 +37,7 @@ func(hs *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	CreateJsonResponse(w, r, http.StatusOK, ml)
 }
 
-func(hs *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request) {
+func (hs *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	hs.HttpHandler = Openapi.GetMemberByIdCtx(hs.HttpHandler)
 
 	id := r.Context().Value("id").(int)
@@ -55,7 +55,7 @@ func(hs *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	CreateJsonResponse(w, r, http.StatusOK, me)
 }
 
-func(hs *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
+func (hs *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MysqlWebServiceRepository{Db: hs.Db}
 
 	ws := &application.WebServiceScenario{WebServiceRepository: repo}

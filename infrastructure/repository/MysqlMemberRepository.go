@@ -13,7 +13,7 @@ type MysqlMemberRepository struct {
 }
 
 type FindTableData struct {
-	Id   int64
+	Id         int64
 	GithubId   string
 	AvatarUrl  string
 	CvRepoName string
@@ -70,7 +70,7 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 }
 
 type FindAllTableData struct {
-	Id   int64
+	Id         int64
 	GithubId   string
 	AvatarUrl  string
 	CvRepoName string

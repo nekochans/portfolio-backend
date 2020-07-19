@@ -82,4 +82,3 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 
 	return r
 }
-
