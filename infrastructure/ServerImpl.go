@@ -2,12 +2,14 @@ package infrastructure
 
 import (
 	"database/sql"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/nekochans/portfolio-backend/application"
+	"github.com/nekochans/portfolio-backend/config"
 	Openapi "github.com/nekochans/portfolio-backend/infrastructure/openapi"
+	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -28,30 +30,17 @@ type GetMembersResponse struct {
 }
 
 func(si *ServerImpl) GetMembers(w http.ResponseWriter, r *http.Request) {
-	var ms Members
+	repo := &repository.MySQLMemberRepository{DB: si.DB}
 
-	ms = append(
-		ms,
-		&Openapi.Member{
-			Id:             1,
-			GithubUserName: "keitakn",
-			GithubPicture:  "https://avatars1.githubusercontent.com/u/11032365?s=460&v=4",
-			CvUrl:          "https://github.com/keitakn/cv",
-		},
-	)
+	ms := application.MemberScenario{MemberRepository: repo}
+	ml, err := ms.FetchAllFromMySQL()
 
-	ms = append(
-		ms,
-		&Openapi.Member{
-			Id:             2,
-			GithubUserName: "kobayashi-m42",
-			GithubPicture:  "https://avatars0.githubusercontent.com/u/32682645?s=460&v=4",
-			CvUrl:          "https://github.com/kobayashi-m42/cv",
-		},
-	)
+	if err != nil {
+		CreateErrorResponse(w, r, err)
+		return
+	}
 
-	res := GetMembersResponse{Items: ms}
-	CreateJsonResponse(w, r, http.StatusOK, res)
+	CreateJsonResponse(w, r, http.StatusOK, ml)
 }
 
 func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
@@ -59,41 +48,31 @@ func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
 
 	id := r.Context().Value("id").(int)
 
-	log.Println("🐱🐱")
-	log.Println(id)
-	log.Println("🐱🐱")
+	repo := &repository.MySQLMemberRepository{DB: si.DB}
+	ms := application.MemberScenario{MemberRepository: repo}
 
-	res := &Openapi.Member{
-		Id:             2,
-		GithubUserName: "kobayashi-m42",
-		GithubPicture:  "https://avatars0.githubusercontent.com/u/32682645?s=460&v=4",
-		CvUrl:          "https://github.com/kobayashi-m42/cv",
+	req := &application.MemberFetchRequest{MemberID: id}
+	me, err := ms.FetchFromMySQL(*req)
+	if err != nil {
+		CreateErrorResponse(w, r, err)
+		return
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, res)
+	CreateJsonResponse(w, r, http.StatusOK, me)
 }
 
 func(si *ServerImpl) GetWebservices(w http.ResponseWriter, r *http.Request) {
-}
+	repo := &repository.MySQLWebServiceRepository{DB: si.DB}
 
-func(si *ServerImpl) CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payload interface{}) {
-	res, err := json.MarshalIndent(payload, "", "    ")
+	ws := &application.WebServiceScenario{WebServiceRepository: repo}
+
+	res, err := ws.FetchAllFromMySQL()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, err := w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Fatal(err, "http.ResponseWriter() Fatal.")
-		}
+		CreateErrorResponse(w, r, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("X-Request-Id", middleware.GetReqID(r.Context()))
-	w.WriteHeader(status)
-	_, err = w.Write([]byte(res))
-	if err != nil {
-		log.Fatal(err, "http.ResponseWriter() Fatal.")
-	}
+
+	CreateJsonResponse(w, r, http.StatusOK, res)
 }
 
 func (si *ServerImpl) middleware() {
@@ -138,13 +117,17 @@ func StartServerImpl() {
 		}
 	}()
 
+	db, err := sql.Open("mysql", config.GetDsn())
+	if err != nil {
+		log.Fatal(db, "Unable to connect to MySQL server.")
+	}
+
 	r := chi.NewRouter()
-	s := NewServerImpl(logger, r)
+	s := NewServerImplWithMySQL(db, logger, r)
 	s.Init(*env)
 
-	h := Openapi.HandlerFromMux(s, s.router)
-	s.httpHandler = h
+	s.httpHandler = Openapi.HandlerFromMux(s, s.router)
 
 	log.Println("Starting app")
-	_ = http.ListenAndServe(fmt.Sprint(":", *port), r)
+	_ = http.ListenAndServe(fmt.Sprint(":", *port), s.router)
 }
