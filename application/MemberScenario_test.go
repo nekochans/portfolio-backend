@@ -11,62 +11,62 @@ import (
 	"testing"
 )
 
-func fixtureTestMemberScenarioFetchFromMySQLSucceed(t *testing.T, db *sql.DB) {
+func fixtureTestMemberScenarioFetchFromMysqlSucceed(t *testing.T, db *sql.DB) {
 	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchfrommysql/succeed")
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
 	}
 
-	seeder := &test.Seeder{DB: db, DirPath: testDataDir}
+	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
 	err = seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
 	}
 
 	err = seeder.Execute()
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
 	}
 }
 
-func fixtureTestMemberScenarioFetchFromMySQLFailureMembersNotFound(t *testing.T, db *sql.DB) {
-	seeder := &test.Seeder{DB: db}
+func fixtureTestMemberScenarioFetchFromMysqlFailureMembersNotFound(t *testing.T, db *sql.DB) {
+	seeder := &test.Seeder{Db: db}
 	err := seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMySQLFailureMembersNotFound Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlFailureMembersNotFound Error", err)
 	}
 }
 
-func fixtureTestMemberScenarioFetchAllFromMySQLSucceed(t *testing.T, db *sql.DB) {
+func fixtureTestMemberScenarioFetchAllFromMysqlSucceed(t *testing.T, db *sql.DB) {
 	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 
-	seeder := &test.Seeder{DB: db, DirPath: testDataDir}
+	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
 	err = seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 
 	err = seeder.Execute()
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 }
 
-func fixtureTestMemberScenarioFetchAllFromMySQLFailureMembersNotFound(t *testing.T, db *sql.DB) {
-	seeder := &test.Seeder{DB: db}
+func fixtureTestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t *testing.T, db *sql.DB) {
+	seeder := &test.Seeder{Db: db}
 	err := seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMySQLFailureMembersNotFound Error", err)
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlFailureMembersNotFound Error", err)
 	}
 }
 
-func TestMemberScenarioFetchFromMySQLSucceed(t *testing.T) {
+func TestMemberScenarioFetchFromMysqlSucceed(t *testing.T) {
 	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestMemberScenarioFetchFromMySQLSucceed(t, db)
+	fixtureTestMemberScenarioFetchFromMysqlSucceed(t, db)
 
 	expected := &Openapi.Member{
 		Id:             1,
@@ -90,10 +90,10 @@ func TestMemberScenarioFetchFromMySQLSucceed(t *testing.T) {
 	}
 }
 
-func TestMemberScenarioFetchFromMySQLFailureMemberNotFound(t *testing.T) {
+func TestMemberScenarioFetchFromMysqlFailureMemberNotFound(t *testing.T) {
 	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestMemberScenarioFetchFromMySQLFailureMembersNotFound(t, db)
+	fixtureTestMemberScenarioFetchFromMysqlFailureMembersNotFound(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
 	ms := &MemberScenario{MemberRepository: repo}
@@ -146,10 +146,10 @@ func TestMemberScenarioFetchAllMemorySucceed(t *testing.T) {
 	}
 }
 
-func TestMemberScenarioFetchAllFromMySQLSucceed(t *testing.T) {
+func TestMemberScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestMemberScenarioFetchAllFromMySQLSucceed(t, db)
+	fixtureTestMemberScenarioFetchAllFromMysqlSucceed(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
 	ms := &MemberScenario{MemberRepository: repo}
@@ -184,10 +184,10 @@ func TestMemberScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 	}
 }
 
-func TestMemberScenarioFetchAllFromMySQLFailureMembersNotFound(t *testing.T) {
+func TestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t *testing.T) {
 	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestMemberScenarioFetchAllFromMySQLFailureMembersNotFound(t, db)
+	fixtureTestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
 	ms := &MemberScenario{MemberRepository: repo}

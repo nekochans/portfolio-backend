@@ -10,7 +10,7 @@ import (
 )
 
 type Seeder struct {
-	DB      *sql.DB
+	Db      *sql.DB
 	DirPath string
 }
 
@@ -20,7 +20,7 @@ func (s *Seeder) Execute() error {
 		return err
 	}
 
-	tx, err := s.DB.Begin()
+	tx, err := s.Db.Begin()
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (s *Seeder) Execute() error {
 }
 
 func (s *Seeder) TruncateAllTable() error {
-	tx, err := s.DB.Begin()
+	tx, err := s.Db.Begin()
 	if err != nil {
 		return err
 	}

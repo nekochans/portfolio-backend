@@ -33,36 +33,36 @@ func TestWebServiceScenarioFetchAllFromMemorySucceed(t *testing.T) {
 	}
 }
 
-func fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T, db *sql.DB) {
+func fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T, db *sql.DB) {
 	testDataDir, err := filepath.Abs("../test/data/webservicescenario/fetchallfrommysql/succeed")
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 
-	seeder := &test.Seeder{DB: db, DirPath: testDataDir}
+	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
 	err = seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 
 	err = seeder.Execute()
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 }
 
-func fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t *testing.T, db *sql.DB) {
-	seeder := &test.Seeder{DB: db}
+func fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t *testing.T, db *sql.DB) {
+	seeder := &test.Seeder{Db: db}
 	err := seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound Error", err)
 	}
 }
 
-func TestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T) {
+func TestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed(t, db)
+	fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}
 	ws := &WebServiceScenario{WebServiceRepository: repo}
@@ -90,10 +90,10 @@ func TestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 	}
 }
 
-func TestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t *testing.T) {
+func TestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t *testing.T) {
 	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t, db)
+	fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}
 	ws := &WebServiceScenario{WebServiceRepository: repo}
