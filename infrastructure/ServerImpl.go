@@ -8,8 +8,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/nekochans/portfolio-backend/application"
 	"github.com/nekochans/portfolio-backend/config"
-	Openapi "github.com/nekochans/portfolio-backend/infrastructure/openapi"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
+	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -21,12 +21,6 @@ type ServerImpl struct {
 	router *chi.Mux
 	DB     *sql.DB
 	Logger *zap.Logger
-}
-
-type Members []*Openapi.Member
-
-type GetMembersResponse struct {
-	Items Members `json:"items"`
 }
 
 func(si *ServerImpl) GetMembers(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +38,7 @@ func(si *ServerImpl) GetMembers(w http.ResponseWriter, r *http.Request) {
 }
 
 func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
-	si.httpHandler = Openapi.GetMembersCtx(si.httpHandler)
+	si.httpHandler = Openapi.GetMemberByIdCtx(si.httpHandler)
 
 	id := r.Context().Value("id").(int)
 
