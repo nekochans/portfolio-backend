@@ -16,15 +16,15 @@ import (
 	"time"
 )
 
-type ServerImpl struct {
-	httpHandler http.Handler
-	router *chi.Mux
-	DB     *sql.DB
-	Logger *zap.Logger
+type HttpServer struct {
+	HttpHandler http.Handler
+	Router      *chi.Mux
+	Db          *sql.DB
+	Logger      *zap.Logger
 }
 
-func(si *ServerImpl) GetMembers(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlMemberRepository{Db: si.DB}
+func(hs *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
+	repo := &repository.MysqlMemberRepository{Db: hs.Db}
 
 	ms := application.MemberScenario{MemberRepository: repo}
 	ml, err := ms.FetchAllFromMysql()
@@ -37,12 +37,12 @@ func(si *ServerImpl) GetMembers(w http.ResponseWriter, r *http.Request) {
 	CreateJsonResponse(w, r, http.StatusOK, ml)
 }
 
-func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
-	si.httpHandler = Openapi.GetMemberByIdCtx(si.httpHandler)
+func(hs *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request) {
+	hs.HttpHandler = Openapi.GetMemberByIdCtx(hs.HttpHandler)
 
 	id := r.Context().Value("id").(int)
 
-	repo := &repository.MysqlMemberRepository{Db: si.DB}
+	repo := &repository.MysqlMemberRepository{Db: hs.Db}
 	ms := application.MemberScenario{MemberRepository: repo}
 
 	req := &application.MemberFetchRequest{Id: id}
@@ -55,8 +55,8 @@ func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	CreateJsonResponse(w, r, http.StatusOK, me)
 }
 
-func(si *ServerImpl) GetWebservices(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlWebServiceRepository{Db: si.DB}
+func(hs *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
+	repo := &repository.MysqlWebServiceRepository{Db: hs.Db}
 
 	ws := &application.WebServiceScenario{WebServiceRepository: repo}
 
@@ -69,34 +69,33 @@ func(si *ServerImpl) GetWebservices(w http.ResponseWriter, r *http.Request) {
 	CreateJsonResponse(w, r, http.StatusOK, res)
 }
 
-func (si *ServerImpl) middleware() {
-	si.router.Use(middleware.RequestID)
-	si.router.Use(Logger(si.Logger))
-	si.router.Use(middleware.Recoverer)
-	si.router.Use(middleware.Timeout(time.Second * 60))
+func (hs *HttpServer) middleware() {
+	hs.Router.Use(middleware.RequestID)
+	hs.Router.Use(Logger(hs.Logger))
+	hs.Router.Use(middleware.Recoverer)
+	hs.Router.Use(middleware.Timeout(time.Second * 60))
 }
 
-func (si *ServerImpl) Init(env string) {
-	log.Printf("env: %s", env)
-	si.middleware()
+func (hs *HttpServer) Init(env string) {
+	hs.middleware()
 }
 
-func NewServerImpl(logger *zap.Logger, router *chi.Mux) *ServerImpl {
-	return &ServerImpl{
-		router: router,
+func NewHttpServer(logger *zap.Logger, router *chi.Mux) *HttpServer {
+	return &HttpServer{
+		Router: router,
 		Logger: logger,
 	}
 }
 
-func NewServerImplWithMySQL(db *sql.DB, logger *zap.Logger, router *chi.Mux) *ServerImpl {
-	return &ServerImpl{
-		router: router,
-		DB:     db,
+func NewHttpServerWithMysql(db *sql.DB, logger *zap.Logger, router *chi.Mux) *HttpServer {
+	return &HttpServer{
+		Router: router,
+		Db:     db,
 		Logger: logger,
 	}
 }
 
-func StartServerImpl() {
+func StartHttpServer() {
 	var (
 		port = flag.String("port", "8888", "addr to bind")
 		env  = flag.String("env", "develop", "実行環境 (production, staging, develop)")
@@ -117,11 +116,11 @@ func StartServerImpl() {
 	}
 
 	r := chi.NewRouter()
-	s := NewServerImplWithMySQL(db, logger, r)
+	s := NewHttpServerWithMysql(db, logger, r)
 	s.Init(*env)
 
-	s.httpHandler = Openapi.HandlerFromMux(s, s.router)
+	s.HttpHandler = Openapi.HandlerFromMux(s, s.Router)
 
 	log.Println("Starting app")
-	_ = http.ListenAndServe(fmt.Sprint(":", *port), s.router)
+	_ = http.ListenAndServe(fmt.Sprint(":", *port), s.Router)
 }
