@@ -91,3 +91,34 @@ mysql -u root -h 127.0.0.1 -p -P 63306
 ```
 
 本番環境ではMySQLではなく、AWS、GCPのマネージドサービスを利用します。
+
+## OpenAPIスキーマの更新
+
+APIはスキーマ駆動で開発を行っています。
+
+スキーマは [こちら](https://github.com/nekochans/nekochans-openapi/blob/master/docs/portfolio/openapi.yaml) で管理されています。
+
+スキーマの更新があった場合以下のコマンドでインターフェースの更新を行う必要があります。
+
+まずは以下の更新でGitのサブモジュールとして登録されている `openapi.yaml` を更新します。
+
+```
+git submodule update --recursive --remote
+```
+
+`docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
+
+以下を実行します。
+
+```
+oapi-codegen -generate types docs/openapi/docs/portfolio/openapi.yaml > openapi/Model.gen.go
+oapi-codegen -generate chi-server docs/openapi/docs/portfolio/openapi.yaml > openapi/Server.gen.go
+```
+
+生成されたコードという事が分かるように `.gen.go` という拡張子にしています。
+
+エディタによってはコードを変更しようとすると警告が出るようになります。
+
+生成されたコードを手動で直すのは原則として禁止です。
+
+ただしコミットする前に `make lint` で整形を行って下さい。

@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-type DBCreator struct{}
+type DbCreator struct{}
 
-func (d *DBCreator) Create(t *testing.T) *sql.DB {
+func (d *DbCreator) Create(t *testing.T) *sql.DB {
 	db, err := sql.Open("mysql", config.GetTestDsn())
 
 	if err != nil {
-		t.Fatal("DB Connect Error", err)
+		t.Fatal("Db Connect Error", err)
 	}
 
 	return db

@@ -1,10 +1,5 @@
 package domain
 
-type Member struct {
-	ID             int    `json:"id"`
-	GitHubUserName string `json:"githubUserName"`
-	GitHubPicture  string `json:"githubPicture"`
-	CvURL          string `json:"cvUrl"`
-}
+import Openapi "github.com/nekochans/portfolio-backend/openapi"
 
-type Members []*Member
+type Members []*Openapi.Member

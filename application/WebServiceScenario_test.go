@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/nekochans/portfolio-backend/domain"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
+	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"github.com/nekochans/portfolio-backend/test"
 	"path/filepath"
 	"reflect"
@@ -15,9 +16,9 @@ func TestWebServiceScenarioFetchAllFromMemorySucceed(t *testing.T) {
 
 	expected = append(
 		expected,
-		&domain.WebService{
-			ID:          1,
-			URL:         "https://www.mindexer.net",
+		&Openapi.WebService{
+			Id:          1,
+			Url:         "https://www.mindexer.net",
 			Description: "Qiitaのストックを便利にするサービスです。",
 		},
 	)
@@ -32,48 +33,48 @@ func TestWebServiceScenarioFetchAllFromMemorySucceed(t *testing.T) {
 	}
 }
 
-func fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T, db *sql.DB) {
+func fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T, db *sql.DB) {
 	testDataDir, err := filepath.Abs("../test/data/webservicescenario/fetchallfrommysql/succeed")
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 
-	seeder := &test.Seeder{DB: db, DirPath: testDataDir}
+	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
 	err = seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 
 	err = seeder.Execute()
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
 	}
 }
 
-func fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t *testing.T, db *sql.DB) {
-	seeder := &test.Seeder{DB: db}
+func fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t *testing.T, db *sql.DB) {
+	seeder := &test.Seeder{Db: db}
 	err := seeder.TruncateAllTable()
 	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound Error", err)
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound Error", err)
 	}
 }
 
-func TestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+func TestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T) {
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestWebServiceScenarioFetchAllFromMySQLSucceed(t, db)
+	fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t, db)
 
-	repo := &repository.MySQLWebServiceRepository{DB: db}
+	repo := &repository.MysqlWebServiceRepository{Db: db}
 	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMySQL()
+	res, err := ws.FetchAllFromMysql()
 
 	var expected domain.WebServices
 
 	expected = append(
 		expected,
-		&domain.WebService{
-			ID:          10,
-			URL:         "https://stg-www.nekochans.net",
+		&Openapi.WebService{
+			Id:          10,
+			Url:         "https://stg-www.nekochans.net",
 			Description: "Mindexerは、Qiitaのストックに カテゴリ機能を追加したサービスです。",
 		},
 	)
@@ -89,15 +90,15 @@ func TestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 	}
 }
 
-func TestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t *testing.T) {
-	dbCreator := &test.DBCreator{}
+func TestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t *testing.T) {
+	dbCreator := &test.DbCreator{}
 	db := dbCreator.Create(t)
-	fixtureTestWebServiceScenarioFetchAllFromMySQLFailureWebServicesNotFound(t, db)
+	fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t, db)
 
-	repo := &repository.MySQLWebServiceRepository{DB: db}
+	repo := &repository.MysqlWebServiceRepository{Db: db}
 	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMySQL()
-	expected := "MySQLWebServiceRepository.FindAll: WebServices Not Found"
+	res, err := ws.FetchAllFromMysql()
+	expected := "MysqlWebServiceRepository.FindAll: WebServices Not Found"
 
 	if res != nil {
 		t.Error("\nActually: ", res, "\nExpected: ", expected)

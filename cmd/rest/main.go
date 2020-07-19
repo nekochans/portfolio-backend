@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	infrastructure.StartHTTPServer()
+	infrastructure.StartHttpServer()
 }

@@ -1,0 +1,3 @@
+[submodule "docs/openapi"]
+	path = docs/openapi
+	url = git@github.com:nekochans/nekochans-openapi.git
