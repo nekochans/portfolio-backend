@@ -161,7 +161,7 @@ func TestMemberScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 		expected,
 		&Openapi.Member{
 			Id:             10,
-			GithubUserName: "keita-kk",
+			GithubUserName: "keita",
 			GithubPicture:  "https://aaa.png",
 			CvUrl:          "https://github.com/keita/cv",
 		},
