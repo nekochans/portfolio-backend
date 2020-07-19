@@ -2,9 +2,9 @@ package infrastructure
 
 import Openapi "github.com/nekochans/portfolio-backend/openapi"
 
-type OpenApiErrorCreator struct{}
+type HttpErrorCreator struct{}
 
-func (c *OpenApiErrorCreator) CreateFromMsg(msg string) Openapi.Error {
+func (h *HttpErrorCreator) CreateFromMsg(msg string) Openapi.Error {
 	code := 500
 	message := "Internal Server Error"
 

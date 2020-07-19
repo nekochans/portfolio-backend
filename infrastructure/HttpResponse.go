@@ -33,7 +33,7 @@ func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 	logger := CreateLogger()
 	logger.Error(err.Error(), zap.String("RequestId", middleware.GetReqID(r.Context())))
 
-	hc := &OpenApiErrorCreator{}
+	hc := &HttpErrorCreator{}
 	he := hc.CreateFromMsg(err.Error())
 	CreateJsonResponse(w, r, he.Code, he)
 }
