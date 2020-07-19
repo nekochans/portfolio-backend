@@ -9,8 +9,12 @@ func (c *OpenApiErrorCreator) CreateFromMsg(msg string) Openapi.Error {
 	message := "Internal Server Error"
 
 	m := map[string]int{
-		"MysqlMemberRepository.Find: Member Not Found":             404,
-		"MysqlMemberRepository.FindAll: Members Not Found":         404,
+		"MysqlMemberRepository.Find: Member Not Found":     404,
+		"MysqlMemberRepository.FindAll: Members Not Found": 404,
+
+
+
+
 		"MysqlWebServiceRepository.FindAll: WebServices Not Found": 404,
 	}
 
