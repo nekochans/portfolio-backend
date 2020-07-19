@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"github.com/nekochans/portfolio-backend/domain"
+	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"golang.org/x/xerrors"
 )
 
@@ -11,8 +12,8 @@ type MySQLWebServiceRepository struct {
 }
 
 type WebServiceFindAllTableData struct {
-	ID          int
-	URL         string
+	Id          int64
+	Url         string
 	Description string
 }
 
@@ -47,12 +48,12 @@ func (m *MySQLWebServiceRepository) FindAll() (domain.WebServices, error) {
 	var tableData WebServiceFindAllTableData
 	var ws domain.WebServices
 	for rows.Next() {
-		err := rows.Scan(&tableData.ID, &tableData.URL, &tableData.Description)
+		err := rows.Scan(&tableData.Id, &tableData.Url, &tableData.Description)
 		ws = append(
 			ws,
-			&domain.WebService{
-				ID:          tableData.ID,
-				URL:         tableData.URL,
+			&Openapi.WebService{
+				Id:          tableData.Id,
+				Url:         tableData.Url,
 				Description: tableData.Description,
 			},
 		)
@@ -64,7 +65,7 @@ func (m *MySQLWebServiceRepository) FindAll() (domain.WebServices, error) {
 	}
 
 	// この条件の時はデータが1件も存在しない
-	if tableData.ID == 0 {
+	if tableData.Id == 0 {
 		appErr := &domain.BackendError{Msg: "WebServices Not Found"}
 		return nil, xerrors.Errorf("MySQLWebServiceRepository.FindAll: %w", appErr)
 	}

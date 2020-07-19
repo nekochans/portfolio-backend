@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/domain"
+	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"golang.org/x/xerrors"
 )
 
@@ -12,19 +13,19 @@ type MySQLMemberRepository struct {
 }
 
 type FindTableData struct {
-	MemberID   int
-	GitHubID   string
-	AvatarURL  string
-	CVRepoName string
+	Id   int64
+	GithubId   string
+	AvatarUrl  string
+	CvRepoName string
 }
 
-func (m *MySQLMemberRepository) Find(memberID int) (*domain.Member, error) {
+func (m *MySQLMemberRepository) Find(id int) (*Openapi.Member, error) {
 	sql := `
 		SELECT
-		  m.id AS MemberID,
-		  mgu.github_id AS GitHubID,
-		  mgu.avatar_url AS AvatarURL,
-		  mgu.cv_repo_name AS CVRepoName
+		  m.id AS Id,
+		  mgu.github_id AS GithubId,
+		  mgu.avatar_url AS AvatarUrl,
+		  mgu.cv_repo_name AS CvRepoName
 		FROM
 		  members AS m
 		INNER JOIN
@@ -46,7 +47,7 @@ func (m *MySQLMemberRepository) Find(memberID int) (*domain.Member, error) {
 
 	var tableData FindTableData
 
-	err = stmt.QueryRow(memberID).Scan(&tableData.MemberID, &tableData.GitHubID, &tableData.AvatarURL, &tableData.CVRepoName)
+	err = stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
 	if err != nil {
 		// この条件の時はデータが1件も存在しない
 		if err.Error() == "sql: no rows in result set" {
@@ -58,30 +59,30 @@ func (m *MySQLMemberRepository) Find(memberID int) (*domain.Member, error) {
 		return nil, xerrors.Errorf("MySQLMemberRepository.Find: %w", appErr)
 	}
 
-	me := &domain.Member{
-		ID:             tableData.MemberID,
-		GitHubUserName: tableData.GitHubID,
-		GitHubPicture:  tableData.AvatarURL,
-		CvURL:          "https://github.com/" + tableData.GitHubID + "/" + tableData.CVRepoName,
+	me := &Openapi.Member{
+		Id:             tableData.Id,
+		GithubUserName: tableData.GithubId,
+		GithubPicture:  tableData.AvatarUrl,
+		CvUrl:          "https://github.com/" + tableData.GithubId + "/" + tableData.CvRepoName,
 	}
 
 	return me, nil
 }
 
 type FindAllTableData struct {
-	MemberID   int
-	GitHubID   string
-	AvatarURL  string
-	CVRepoName string
+	Id   int64
+	GithubId   string
+	AvatarUrl  string
+	CvRepoName string
 }
 
 func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 	sql := `
 		SELECT
-		  m.id AS MemberID,
-		  mgu.github_id AS GitHubID,
-		  mgu.avatar_url AS AvatarURL,
-		  mgu.cv_repo_name AS CVRepoName
+		  m.id AS Id,
+		  mgu.github_id AS GithubId,
+		  mgu.avatar_url AS AvatarUrl,
+		  mgu.cv_repo_name AS CvRepoName
 		FROM
 		  members AS m
 		INNER JOIN
@@ -111,14 +112,14 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 	var tableData FindAllTableData
 	var ms domain.Members
 	for rows.Next() {
-		err := rows.Scan(&tableData.MemberID, &tableData.GitHubID, &tableData.AvatarURL, &tableData.CVRepoName)
+		err := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
 		ms = append(
 			ms,
-			&domain.Member{
-				ID:             tableData.MemberID,
-				GitHubUserName: tableData.GitHubID,
-				GitHubPicture:  tableData.AvatarURL,
-				CvURL:          "https://github.com/" + tableData.GitHubID + "/" + tableData.CVRepoName,
+			&Openapi.Member{
+				Id:             tableData.Id,
+				GithubUserName: tableData.GithubId,
+				GithubPicture:  tableData.AvatarUrl,
+				CvUrl:          "https://github.com/" + tableData.GithubId + "/" + tableData.CvRepoName,
 			},
 		)
 
@@ -129,7 +130,7 @@ func (m *MySQLMemberRepository) FindAll() (domain.Members, error) {
 	}
 
 	// この条件の時はデータが1件も存在しない
-	if tableData.MemberID == 0 {
+	if tableData.Id == 0 {
 		appErr := &domain.BackendError{Msg: "Members Not Found"}
 		return nil, xerrors.Errorf("MySQLMemberRepository.FindAll: %w", appErr)
 	}

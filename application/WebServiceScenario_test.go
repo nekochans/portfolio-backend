@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/nekochans/portfolio-backend/domain"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
+	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"github.com/nekochans/portfolio-backend/test"
 	"path/filepath"
 	"reflect"
@@ -15,9 +16,9 @@ func TestWebServiceScenarioFetchAllFromMemorySucceed(t *testing.T) {
 
 	expected = append(
 		expected,
-		&domain.WebService{
-			ID:          1,
-			URL:         "https://www.mindexer.net",
+		&Openapi.WebService{
+			Id:          1,
+			Url:         "https://www.mindexer.net",
 			Description: "Qiitaのストックを便利にするサービスです。",
 		},
 	)
@@ -71,9 +72,9 @@ func TestWebServiceScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 
 	expected = append(
 		expected,
-		&domain.WebService{
-			ID:          10,
-			URL:         "https://stg-www.nekochans.net",
+		&Openapi.WebService{
+			Id:          10,
+			Url:         "https://stg-www.nekochans.net",
 			Description: "Mindexerは、Qiitaのストックに カテゴリ機能を追加したサービスです。",
 		},
 	)

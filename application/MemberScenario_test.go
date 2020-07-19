@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/nekochans/portfolio-backend/domain"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
+	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"github.com/nekochans/portfolio-backend/test"
 	"path/filepath"
 	"reflect"
@@ -67,16 +68,16 @@ func TestMemberScenarioFetchFromMySQLSucceed(t *testing.T) {
 	db := dbCreator.Create(t)
 	fixtureTestMemberScenarioFetchFromMySQLSucceed(t, db)
 
-	expected := &domain.Member{
-		ID:             1,
-		GitHubUserName: "keitakn",
-		GitHubPicture:  "https://avatars3.githubusercontent.com/u/11032365",
-		CvURL:          "https://github.com/keitakn/cv",
+	expected := &Openapi.Member{
+		Id:             1,
+		GithubUserName: "keitakn",
+		GithubPicture:  "https://avatars3.githubusercontent.com/u/11032365",
+		CvUrl:          "https://github.com/keitakn/cv",
 	}
 
 	repo := &repository.MySQLMemberRepository{DB: db}
 	ms := &MemberScenario{MemberRepository: repo}
-	req := &MemberFetchRequest{MemberID: 1}
+	req := &MemberFetchRequest{Id: 1}
 
 	res, err := ms.FetchFromMySQL(*req)
 
@@ -96,7 +97,7 @@ func TestMemberScenarioFetchFromMySQLFailureMemberNotFound(t *testing.T) {
 
 	repo := &repository.MySQLMemberRepository{DB: db}
 	ms := &MemberScenario{MemberRepository: repo}
-	req := &MemberFetchRequest{MemberID: 99}
+	req := &MemberFetchRequest{Id: 99}
 
 	res, err := ms.FetchFromMySQL(*req)
 	expected := "MySQLMemberRepository.Find: Member Not Found"
@@ -117,21 +118,21 @@ func TestMemberScenarioFetchAllMemorySucceed(t *testing.T) {
 
 	expected = append(
 		expected,
-		&domain.Member{
-			ID:             1,
-			GitHubUserName: "keitakn",
-			GitHubPicture:  "https://avatars1.githubusercontent.com/u/11032365?s=460&v=4",
-			CvURL:          "https://github.com/keitakn/cv",
+		&Openapi.Member{
+			Id:             1,
+			GithubUserName: "keitakn",
+			GithubPicture:  "https://avatars1.githubusercontent.com/u/11032365?s=460&v=4",
+			CvUrl:          "https://github.com/keitakn/cv",
 		},
 	)
 
 	expected = append(
 		expected,
-		&domain.Member{
-			ID:             2,
-			GitHubUserName: "kobayashi-m42",
-			GitHubPicture:  "https://avatars0.githubusercontent.com/u/32682645?s=460&v=4",
-			CvURL:          "https://github.com/kobayashi-m42/cv",
+		&Openapi.Member{
+			Id:             2,
+			GithubUserName: "kobayashi-m42",
+			GithubPicture:  "https://avatars0.githubusercontent.com/u/32682645?s=460&v=4",
+			CvUrl:          "https://github.com/kobayashi-m42/cv",
 		},
 	)
 
@@ -158,17 +159,17 @@ func TestMemberScenarioFetchAllFromMySQLSucceed(t *testing.T) {
 
 	expected = append(
 		expected,
-		&domain.Member{
-			ID:             10,
-			GitHubUserName: "keita",
-			GitHubPicture:  "https://aaa.png",
-			CvURL:          "https://github.com/keita/cv",
+		&Openapi.Member{
+			Id:             10,
+			GithubUserName: "keita",
+			GithubPicture:  "https://aaa.png",
+			CvUrl:          "https://github.com/keita/cv",
 		},
-		&domain.Member{
-			ID:             20,
-			GitHubUserName: "moko-cat",
-			GitHubPicture:  "https://neko.jpeg",
-			CvURL:          "https://github.com/moko-cat/resume",
+		&Openapi.Member{
+			Id:             20,
+			GithubUserName: "moko-cat",
+			GithubPicture:  "https://neko.jpeg",
+			CvUrl:          "https://github.com/moko-cat/resume",
 		},
 	)
 

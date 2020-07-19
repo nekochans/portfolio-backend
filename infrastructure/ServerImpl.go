@@ -45,7 +45,7 @@ func(si *ServerImpl) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MySQLMemberRepository{DB: si.DB}
 	ms := application.MemberScenario{MemberRepository: repo}
 
-	req := &application.MemberFetchRequest{MemberID: id}
+	req := &application.MemberFetchRequest{Id: id}
 	me, err := ms.FetchFromMySQL(*req)
 	if err != nil {
 		CreateErrorResponse(w, r, err)

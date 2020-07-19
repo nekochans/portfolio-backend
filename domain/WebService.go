@@ -1,9 +1,5 @@
 package domain
 
-type WebService struct {
-	ID          int    `json:"id"`
-	URL         string `json:"url"`
-	Description string `json:"description"`
-}
+import Openapi "github.com/nekochans/portfolio-backend/openapi"
 
-type WebServices []*WebService
+type WebServices []*Openapi.WebService
