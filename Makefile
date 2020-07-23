@@ -1,4 +1,4 @@
-.PHONY: migrate-up migrate-down lint test test-ci
+.PHONY: migrate-up migrate-down lint format test test-ci
 
 migrate-up:
 	@migrate -source file://./_sql -database 'mysql://$(DB_USER):$(DB_PASSWORD)@tcp($(DB_HOST):3306)/$(DB_NAME)' up
