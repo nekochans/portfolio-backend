@@ -8,8 +8,9 @@ migrate-down:
 	@migrate -source file://./_sql -database 'mysql://${TEST_DB_USER}:${TEST_DB_PASSWORD}@tcp(${DB_HOST}:3306)/${TEST_DB_NAME}' down
 lint:
 	@go vet ./...
-	@gofmt -l -s -w .
 	@golangci-lint run ./...
+format:
+	@gofmt -l -s -w .
 test:
 	@go test -v ./...
 test-ci:
