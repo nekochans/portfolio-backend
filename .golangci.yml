@@ -13,3 +13,4 @@ linters:
     - unused
     - varcheck
     - whitespace
+    - noctx
