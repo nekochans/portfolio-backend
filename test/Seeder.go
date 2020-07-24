@@ -3,10 +3,11 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
 	"io/ioutil"
 	"log"
 	"path/filepath"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type Seeder struct {

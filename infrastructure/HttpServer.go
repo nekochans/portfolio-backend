@@ -4,6 +4,10 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/nekochans/portfolio-backend/application"
@@ -11,9 +15,6 @@ import (
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"go.uber.org/zap"
-	"log"
-	"net/http"
-	"time"
 )
 
 type HttpServer struct {

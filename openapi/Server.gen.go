@@ -6,9 +6,10 @@ package Openapi
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/go-chi/chi"
-	"net/http"
 )
 
 type ServerInterface interface {

@@ -2,10 +2,11 @@ package infrastructure
 
 import (
 	"encoding/json"
-	"github.com/go-chi/chi/middleware"
-	"go.uber.org/zap"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi/middleware"
+	"go.uber.org/zap"
 )
 
 func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payload interface{}) {

@@ -2,8 +2,9 @@ package test
 
 import (
 	"database/sql"
-	"github.com/nekochans/portfolio-backend/config"
 	"testing"
+
+	"github.com/nekochans/portfolio-backend/config"
 )
 
 type DbCreator struct{}
