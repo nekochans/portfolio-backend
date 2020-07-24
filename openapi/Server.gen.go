@@ -4,7 +4,6 @@
 package Openapi
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -12,53 +11,54 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// 002 メンバー一覧参照 (GET /members)
+	// 002 メンバー一覧参照
+	// (GET /members)
 	GetMembers(w http.ResponseWriter, r *http.Request)
-	// 001 メンバー参照 (GET /members/{id})
-	GetMemberById(w http.ResponseWriter, r *http.Request)
-	// 003 Webサービス一覧参照 (GET /webservices)
+	// 001 メンバー参照
+	// (GET /members/{id})
+	GetMemberById(w http.ResponseWriter, r *http.Request, id int)
+	// 003 Webサービス一覧参照
+	// (GET /webservices)
 	GetWebservices(w http.ResponseWriter, r *http.Request)
 }
 
-// GetMembers operation middleware
-func GetMembersCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+// ServerInterfaceWrapper converts contexts to parameters.
+type ServerInterfaceWrapper struct {
+	Handler ServerInterface
+}
 
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+// GetMembers operation middleware
+func (siw *ServerInterfaceWrapper) GetMembers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	siw.Handler.GetMembers(w, r.WithContext(ctx))
 }
 
 // GetMemberById operation middleware
-func GetMemberByIdCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func (siw *ServerInterfaceWrapper) GetMemberById(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-		var err error
+	var err error
 
-		// ------------- Path parameter "id" -------------
-		var id int
+	// ------------- Path parameter "id" -------------
+	var id int
 
-		err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		ctx = context.WithValue(ctx, "id", id)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+	siw.Handler.GetMemberById(w, r.WithContext(ctx), id)
 }
 
 // GetWebservices operation middleware
-func GetWebservicesCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func (siw *ServerInterfaceWrapper) GetWebservices(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+	siw.Handler.GetWebservices(w, r.WithContext(ctx))
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
@@ -68,17 +68,18 @@ func Handler(si ServerInterface) http.Handler {
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	wrapper := ServerInterfaceWrapper{
+		Handler: si,
+	}
+
 	r.Group(func(r chi.Router) {
-		r.Use(GetMembersCtx)
-		r.Get("/members", si.GetMembers)
+		r.Get("/members", wrapper.GetMembers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Use(GetMemberByIdCtx)
-		r.Get("/members/{id}", si.GetMemberById)
+		r.Get("/members/{id}", wrapper.GetMemberById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Use(GetWebservicesCtx)
-		r.Get("/webservices", si.GetWebservices)
+		r.Get("/webservices", wrapper.GetWebservices)
 	})
 
 	return r
