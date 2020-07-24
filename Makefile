@@ -11,6 +11,7 @@ lint:
 	@golangci-lint run ./...
 format:
 	@gofmt -l -s -w .
+	@goimports -w -l ./
 test:
 	@go test -v ./...
 test-ci:
