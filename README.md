@@ -60,7 +60,7 @@ docker-compose exec go make migrate-down
 
 `docker-push-to-gcr.sh` を実行して下さい。
 
-## ソースコードのフォーマット
+## Lintの実行
 
 `docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
 
@@ -72,7 +72,19 @@ lintのルール等は以下を参考にして下さい。
 
 https://golangci-lint.run/usage/linters/
 
-内部でソースコードのフォーマットも行っていますが、自動で修正されない物は自分で修正を行う必要があります。
+ここで表示されたエラーは修正を行う必要があります。
+
+一部のエラー内容は後で解説する `make format` コマンドでも修正可能です。
+
+## ソースコードのフォーマット
+
+`docker-compose exec go sh` でアプリケーション用のコンテナに入ります。
+
+`make format` を実行して下さい。
+
+もしくは `docker-compose exec go make format` でも実行出来ます。
+
+このコマンドで自動修正されない物は自分で修正を行う必要があります。
 
 ## テストの実行
 
