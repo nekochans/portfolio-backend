@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/domain"
@@ -44,7 +45,12 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
 	}
 
-	defer stmt.Close()
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			log.Fatal(err, "stmt.Close() Fatal.")
+		}
+	}()
 
 	var tableData FindTableData
 
@@ -101,7 +107,12 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 	}
 
-	defer stmt.Close()
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			log.Fatal(err, "stmt.Close() Fatal.")
+		}
+	}()
 
 	rows, err := stmt.Query()
 
