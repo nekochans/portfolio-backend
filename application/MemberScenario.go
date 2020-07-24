@@ -29,10 +29,13 @@ type MemberFetchAllResponse struct {
 func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	var ms domain.Members
 
+	const keitaMemberId = 1
+	const mopMemberId = 2
+
 	ms = append(
 		ms,
 		&Openapi.Member{
-			Id:             1,
+			Id:             keitaMemberId,
 			GithubUserName: "keitakn",
 			GithubPicture:  "https://avatars1.githubusercontent.com/u/11032365?s=460&v=4",
 			CvUrl:          "https://github.com/keitakn/cv",
@@ -42,7 +45,7 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	ms = append(
 		ms,
 		&Openapi.Member{
-			Id:             2,
+			Id:             mopMemberId,
 			GithubUserName: "kobayashi-m42",
 			GithubPicture:  "https://avatars0.githubusercontent.com/u/32682645?s=460&v=4",
 			CvUrl:          "https://github.com/kobayashi-m42/cv",

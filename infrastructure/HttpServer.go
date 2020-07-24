@@ -67,10 +67,12 @@ func (hs *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) middleware() {
+	const timeoutSecond = 60
+
 	hs.Router.Use(middleware.RequestID)
 	hs.Router.Use(Logger(hs.Logger))
 	hs.Router.Use(middleware.Recoverer)
-	hs.Router.Use(middleware.Timeout(time.Second * 60))
+	hs.Router.Use(middleware.Timeout(time.Second * timeoutSecond))
 }
 
 func (hs *HttpServer) Init(env string) {
