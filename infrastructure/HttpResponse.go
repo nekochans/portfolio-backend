@@ -23,7 +23,7 @@ func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payl
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("X-Request-Id", middleware.GetReqID(r.Context()))
 	w.WriteHeader(status)
-	_, err = w.Write([]byte(res))
+	_, err = w.Write(res)
 	if err != nil {
 		log.Fatal(err, "http.ResponseWriter() Fatal.")
 	}
