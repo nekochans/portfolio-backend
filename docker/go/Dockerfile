@@ -19,7 +19,8 @@ RUN set -eux && \
   go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv && \
   go get -tags 'mysql' -u github.com/golang-migrate/migrate/cmd/migrate && \
   curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${GOLANGCI_LINT_VERSION} && \
-  go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
+  go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen && \
+  go get golang.org/x/tools/cmd/goimports
 
 ENV GO111MODULE on
 
