@@ -5,13 +5,16 @@ import Openapi "github.com/nekochans/portfolio-backend/openapi"
 type HttpErrorCreator struct{}
 
 func (h *HttpErrorCreator) CreateFromMsg(msg string) Openapi.Error {
-	code := 500
+	const notFoundErrorCode = 404
+	const internalServerErrorCode = 500
+
+	code := internalServerErrorCode
 	message := "Internal Server Error"
 
 	m := map[string]int{
-		"MysqlMemberRepository.Find: Member Not Found":     404,
-		"MysqlMemberRepository.FindAll: Members Not Found": 404,
-		"MysqlWebServiceRepository.FindAll: WebServices Not Found": 404,
+		"MysqlMemberRepository.Find: Member Not Found":             notFoundErrorCode,
+		"MysqlMemberRepository.FindAll: Members Not Found":         notFoundErrorCode,
+		"MysqlWebServiceRepository.FindAll: WebServices Not Found": notFoundErrorCode,
 	}
 
 	if m[msg] != 0 {

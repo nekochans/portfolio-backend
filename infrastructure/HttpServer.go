@@ -4,6 +4,10 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/nekochans/portfolio-backend/application"
@@ -11,9 +15,6 @@ import (
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"go.uber.org/zap"
-	"log"
-	"net/http"
-	"time"
 )
 
 type HttpServer struct {
@@ -37,11 +38,7 @@ func (hs *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	CreateJsonResponse(w, r, http.StatusOK, ml)
 }
 
-func (hs *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request) {
-	hs.HttpHandler = Openapi.GetMemberByIdCtx(hs.HttpHandler)
-
-	id := r.Context().Value("id").(int)
-
+func (hs *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
 	repo := &repository.MysqlMemberRepository{Db: hs.Db}
 	ms := application.MemberScenario{MemberRepository: repo}
 
@@ -70,10 +67,12 @@ func (hs *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) middleware() {
+	const timeoutSecond = 60
+
 	hs.Router.Use(middleware.RequestID)
 	hs.Router.Use(Logger(hs.Logger))
 	hs.Router.Use(middleware.Recoverer)
-	hs.Router.Use(middleware.Timeout(time.Second * 60))
+	hs.Router.Use(middleware.Timeout(time.Second * timeoutSecond))
 }
 
 func (hs *HttpServer) Init(env string) {

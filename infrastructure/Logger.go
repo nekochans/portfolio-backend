@@ -1,11 +1,12 @@
 package infrastructure
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"net/http"
-	"time"
 )
 
 func Logger(l *zap.Logger) func(next http.Handler) http.Handler {

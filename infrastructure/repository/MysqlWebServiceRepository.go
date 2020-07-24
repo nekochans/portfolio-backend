@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"log"
+
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"golang.org/x/xerrors"
@@ -36,7 +38,12 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
 	}
 
-	defer stmt.Close()
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			log.Fatal(err, "stmt.Close() Fatal.")
+		}
+	}()
 
 	rows, err := stmt.Query()
 
