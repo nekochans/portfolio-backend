@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine3.11 as build
+FROM golang:1.15-alpine3.12 as build
 
 LABEL maintainer="https://github.com/nekochans"
 
@@ -29,7 +29,7 @@ RUN set -eux && \
 
 ENV CGO_ENABLED 0
 
-FROM alpine:3.11
+FROM alpine:3.12
 
 WORKDIR /app
 
