@@ -8,7 +8,7 @@ COPY . .
 
 ENV GO111MODULE=off
 
-ARG GOLANGCI_LINT_VERSION=v1.29.0
+ARG GOLANGCI_LINT_VERSION=v1.32.0
 
 RUN set -eux && \
   apk update && \
