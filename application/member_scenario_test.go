@@ -13,20 +13,20 @@ import (
 )
 
 func fixtureTestMemberScenarioFetchFromMysqlSucceed(t *testing.T, db *sql.DB) {
-	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchfrommysql/succeed")
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
+	testDataDir, ErrFilepath := filepath.Abs("../test/data/memberscenario/fetchfrommysql/succeed")
+	if ErrFilepath != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", ErrFilepath)
 	}
 
 	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
-	err = seeder.TruncateAllTable()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
+	ErrTruncate := seeder.TruncateAllTable()
+	if ErrTruncate != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", ErrTruncate)
 	}
 
-	err = seeder.Execute()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
+	ErrSeeder := seeder.Execute()
+	if ErrSeeder != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", ErrSeeder)
 	}
 }
 
@@ -39,20 +39,20 @@ func fixtureTestMemberScenarioFetchFromMysqlFailureMembersNotFound(t *testing.T,
 }
 
 func fixtureTestMemberScenarioFetchAllFromMysqlSucceed(t *testing.T, db *sql.DB) {
-	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
+	testDataDir, ErrFilepath := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
+	if ErrFilepath != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", ErrFilepath)
 	}
 
 	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
-	err = seeder.TruncateAllTable()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
+	ErrTruncate := seeder.TruncateAllTable()
+	if ErrTruncate != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", ErrTruncate)
 	}
 
-	err = seeder.Execute()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
+	ErrSeeder := seeder.Execute()
+	if ErrSeeder != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", ErrSeeder)
 	}
 }
 

@@ -16,14 +16,14 @@ type Seeder struct {
 }
 
 func (s *Seeder) Execute() error {
-	files, err := ioutil.ReadDir(s.DirPath)
-	if err != nil {
-		return err
+	files, ErrReadDir := ioutil.ReadDir(s.DirPath)
+	if ErrReadDir != nil {
+		return ErrReadDir
 	}
 
-	tx, err := s.Db.Begin()
-	if err != nil {
-		return err
+	tx, ErrTransactionBegin := s.Db.Begin()
+	if ErrTransactionBegin != nil {
+		return ErrTransactionBegin
 	}
 
 	for _, file := range files {
@@ -35,12 +35,12 @@ func (s *Seeder) Execute() error {
 		table := file.Name()[:len(file.Name())-len(ext)]
 		csvFilePath := filepath.Join(s.DirPath, file.Name())
 
-		if _, err := loadDataFromCSV(tx, table, csvFilePath); err != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		if _, ErrLoadData := loadDataFromCSV(tx, table, csvFilePath); ErrLoadData != nil {
+			ErrRollback := tx.Rollback()
+			if ErrRollback != nil {
+				log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 			}
-			return err
+			return ErrLoadData
 		}
 	}
 
@@ -48,54 +48,55 @@ func (s *Seeder) Execute() error {
 }
 
 func (s *Seeder) TruncateAllTable() error {
-	tx, err := s.Db.Begin()
-	if err != nil {
-		return err
+	tx, ErrTransactionBegin := s.Db.Begin()
+	if ErrTransactionBegin != nil {
+		return ErrTransactionBegin
 	}
 
-	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=0")
-	if err != nil {
+	_, ErrSetForeignKeyFalse := tx.Exec("SET FOREIGN_KEY_CHECKS=0")
+	if ErrSetForeignKeyFalse != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
 			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrSetForeignKeyFalse
 	}
 
-	_, err = tx.Exec("TRUNCATE members")
-	if err != nil {
+	// TODO テーブル分ループさせるように改修を行う
+	_, ErrTruncateMembers := tx.Exec("TRUNCATE members")
+	if ErrTruncateMembers != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
 			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrTruncateMembers
 	}
 
-	_, err = tx.Exec("TRUNCATE members_github_users")
-	if err != nil {
+	_, ErrTruncateGitHubUsers := tx.Exec("TRUNCATE members_github_users")
+	if ErrTruncateGitHubUsers != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
 			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrTruncateGitHubUsers
 	}
 
-	_, err = tx.Exec("TRUNCATE webservices")
-	if err != nil {
+	_, ErrTruncateWebServices := tx.Exec("TRUNCATE webservices")
+	if ErrTruncateWebServices != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
 			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrTruncateWebServices
 	}
 
-	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=1")
-	if err != nil {
+	_, ErrSetForeignKeyTrue := tx.Exec("SET FOREIGN_KEY_CHECKS=1")
+	if ErrSetForeignKeyTrue != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
 			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrSetForeignKeyTrue
 	}
 
 	return tx.Commit()

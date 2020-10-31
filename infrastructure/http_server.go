@@ -104,17 +104,17 @@ func StartHttpServer() {
 
 	logger := CreateLogger()
 	defer func() {
-		err := logger.Sync()
-		if err != nil {
-			loggerSyncErr := xerrors.Errorf("Unable to connect to MySQL server: %w", err)
-			logger.Error(err.Error(), zap.Error(loggerSyncErr))
+		ErrSync := logger.Sync()
+		if ErrSync != nil {
+			ErrLoggerSync := xerrors.Errorf("Failed to logger Sync: %w", ErrSync)
+			logger.Error(ErrSync.Error(), zap.Error(ErrLoggerSync))
 		}
 	}()
 
-	db, err := sql.Open("mysql", config.GetDsn())
-	if err != nil {
-		mysqlErr := xerrors.Errorf("Unable to connect to MySQL server: %w", err)
-		logger.Error(err.Error(), zap.Error(mysqlErr))
+	db, ErrConnectDb := sql.Open("mysql", config.GetDsn())
+	if ErrConnectDb != nil {
+		mysqlErr := xerrors.Errorf("Unable to connect to MySQL server: %w", ErrConnectDb)
+		logger.Error(ErrConnectDb.Error(), zap.Error(mysqlErr))
 	}
 
 	r := chi.NewRouter()

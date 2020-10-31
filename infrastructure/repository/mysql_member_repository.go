@@ -38,10 +38,10 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 			m.id = ?
 	`
 
-	stmt, err := m.Db.Prepare(sql)
+	stmt, ErrPrepare := m.Db.Prepare(sql)
 
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: err}
+	if ErrPrepare != nil {
+		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
 	}
 
@@ -54,15 +54,15 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 
 	var tableData FindTableData
 
-	err = stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
-	if err != nil {
+	ErrQuery := stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
+	if ErrQuery != nil {
 		// この条件の時はデータが1件も存在しない
-		if err.Error() == "sql: no rows in result set" {
+		if ErrQuery.Error() == "sql: no rows in result set" {
 			appErr := &domain.BackendError{Msg: "Member Not Found"}
 			return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
 		}
 
-		appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
+		appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrQuery}
 		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
 	}
 
@@ -101,30 +101,30 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		ASC
 	`
 
-	stmt, err := m.Db.Prepare(sql)
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: err}
+	stmt, ErrPrepare := m.Db.Prepare(sql)
+	if ErrPrepare != nil {
+		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 	}
 
 	defer func() {
-		err := stmt.Close()
-		if err != nil {
-			log.Fatal(err, "stmt.Close() Fatal.")
+		ErrStmtClose := stmt.Close()
+		if ErrStmtClose != nil {
+			log.Fatal(ErrStmtClose, "stmt.Close() Fatal.")
 		}
 	}()
 
-	rows, err := stmt.Query()
+	rows, ErrQuery := stmt.Query()
 
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: err}
+	if ErrQuery != nil {
+		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: ErrQuery}
 		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 	}
 
 	var tableData FindAllTableData
 	var ms domain.Members
 	for rows.Next() {
-		err := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
+		ErrRowsScan := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
 		ms = append(
 			ms,
 			&Openapi.Member{
@@ -135,8 +135,8 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 			},
 		)
 
-		if err != nil {
-			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
+		if ErrRowsScan != nil {
+			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrRowsScan}
 			return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
 		}
 	}

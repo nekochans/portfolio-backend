@@ -32,30 +32,30 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		ASC
 	`
 
-	stmt, err := m.Db.Prepare(sql)
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: err}
+	stmt, ErrPrepare := m.Db.Prepare(sql)
+	if ErrPrepare != nil {
+		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
 	}
 
 	defer func() {
-		err := stmt.Close()
-		if err != nil {
-			log.Fatal(err, "stmt.Close() Fatal.")
+		ErrStmtClose := stmt.Close()
+		if ErrStmtClose != nil {
+			log.Fatal(ErrStmtClose, "stmt.Close() Fatal.")
 		}
 	}()
 
-	rows, err := stmt.Query()
+	rows, ErrQuery := stmt.Query()
 
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: err}
+	if ErrQuery != nil {
+		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: ErrQuery}
 		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
 	}
 
 	var tableData WebServiceFindAllTableData
 	var ws domain.WebServices
 	for rows.Next() {
-		err := rows.Scan(&tableData.Id, &tableData.Url, &tableData.Description)
+		ErrRowsScan := rows.Scan(&tableData.Id, &tableData.Url, &tableData.Description)
 		ws = append(
 			ws,
 			&Openapi.WebService{
@@ -65,8 +65,8 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 			},
 		)
 
-		if err != nil {
-			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
+		if ErrRowsScan != nil {
+			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrRowsScan}
 			return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
 		}
 	}
