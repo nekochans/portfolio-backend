@@ -68,18 +68,22 @@ func Handler(si ServerInterface) http.Handler {
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	return HandlerFromMuxWithBaseURL(si, r, "")
+}
+
+func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get("/members", wrapper.GetMembers)
+		r.Get(baseURL+"/members", wrapper.GetMembers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/members/{id}", wrapper.GetMemberById)
+		r.Get(baseURL+"/members/{id}", wrapper.GetMemberById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/webservices", wrapper.GetWebservices)
+		r.Get(baseURL+"/webservices", wrapper.GetWebservices)
 	})
 
 	return r
