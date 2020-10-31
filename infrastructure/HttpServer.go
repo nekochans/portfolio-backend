@@ -15,6 +15,7 @@ import (
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"go.uber.org/zap"
+	"golang.org/x/xerrors"
 )
 
 type HttpServer struct {
@@ -105,13 +106,15 @@ func StartHttpServer() {
 	defer func() {
 		err := logger.Sync()
 		if err != nil {
-			log.Fatal(err, "logger.Sync() Fatal.")
+			loggerSyncErr := xerrors.Errorf("Unable to connect to MySQL server: %w", err)
+			logger.Error(err.Error(), zap.Error(loggerSyncErr))
 		}
 	}()
 
 	db, err := sql.Open("mysql", config.GetDsn())
 	if err != nil {
-		log.Fatal(db, "Unable to connect to MySQL server.")
+		mysqlErr := xerrors.Errorf("Unable to connect to MySQL server: %w", err)
+		logger.Error(err.Error(), zap.Error(mysqlErr))
 	}
 
 	r := chi.NewRouter()

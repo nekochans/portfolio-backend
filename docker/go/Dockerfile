@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine3.11 as build
+FROM golang:1.15-alpine3.12 as build
 
 LABEL maintainer="https://github.com/nekochans"
 
@@ -8,7 +8,7 @@ COPY . .
 
 ENV GO111MODULE=off
 
-ARG GOLANGCI_LINT_VERSION=v1.29.0
+ARG GOLANGCI_LINT_VERSION=v1.32.0
 
 RUN set -eux && \
   apk update && \
@@ -29,7 +29,7 @@ RUN set -eux && \
 
 ENV CGO_ENABLED 0
 
-FROM alpine:3.11
+FROM alpine:3.12
 
 WORKDIR /app
 
