@@ -35,7 +35,7 @@ func (s *Seeder) Execute() error {
 		table := file.Name()[:len(file.Name())-len(ext)]
 		csvFilePath := filepath.Join(s.DirPath, file.Name())
 
-		if _, ErrLoadData := loadDataFromCSV(tx, table, csvFilePath); ErrLoadData != nil {
+		if _, ErrLoadData := s.loadDataFromCsv(tx, table, csvFilePath); ErrLoadData != nil {
 			ErrRollback := tx.Rollback()
 			if ErrRollback != nil {
 				log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
@@ -102,8 +102,8 @@ func (s *Seeder) TruncateAllTable() error {
 	return tx.Commit()
 }
 
-func loadDataFromCSV(tx *sql.Tx, table, filePath string) (sql.Result, error) {
-	s := `
+func (s *Seeder) loadDataFromCsv(tx *sql.Tx, table, filePath string) (sql.Result, error) {
+	sql := `
 		LOAD DATA
 			LOCAL INFILE '%s'
 		INTO TABLE %s
@@ -116,5 +116,5 @@ func loadDataFromCSV(tx *sql.Tx, table, filePath string) (sql.Result, error) {
 
 	mysql.RegisterLocalFile(filePath)
 
-	return tx.Exec(fmt.Sprintf(s, filePath, table))
+	return tx.Exec(fmt.Sprintf(sql, filePath, table))
 }
