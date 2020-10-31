@@ -123,8 +123,8 @@ git submodule update --recursive --remote
 以下を実行します。
 
 ```
-oapi-codegen -generate types docs/openapi/docs/portfolio/openapi.yaml > openapi/Model.gen.go
-oapi-codegen -generate chi-server docs/openapi/docs/portfolio/openapi.yaml > openapi/Server.gen.go
+oapi-codegen -generate types docs/openapi/docs/portfolio/openapi.yaml > openapi/model.gen.go
+oapi-codegen -generate chi-server docs/openapi/docs/portfolio/openapi.yaml > openapi/server.gen.go
 ```
 
 生成されたコードという事が分かるように `.gen.go` という拡張子にしています。

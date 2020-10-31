@@ -24,6 +24,8 @@ services:
       TEST_DB_USER: ${TEST_DB_USER}
       TEST_DB_PASSWORD: ${TEST_DB_PASSWORD}
       TEST_DB_NAME: ${TEST_DB_NAME}
+    depends_on:
+      - portfolio-backend-mysql
   nginx:
     build:
       context: .
@@ -32,6 +34,8 @@ services:
       - 80:80
     environment:
       - BACKEND_HOST=go:8888
+    depends_on:
+      - go
   portfolio-backend-mysql:
     build:
       context: .
