@@ -55,9 +55,9 @@ func (s *Seeder) TruncateAllTable() error {
 
 	_, ErrSetForeignKeyFalse := tx.Exec("SET FOREIGN_KEY_CHECKS=0")
 	if ErrSetForeignKeyFalse != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
 		return ErrSetForeignKeyFalse
 	}
@@ -65,36 +65,36 @@ func (s *Seeder) TruncateAllTable() error {
 	// TODO テーブル分ループさせるように改修を行う
 	_, ErrTruncateMembers := tx.Exec("TRUNCATE members")
 	if ErrTruncateMembers != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
 		return ErrTruncateMembers
 	}
 
 	_, ErrTruncateGitHubUsers := tx.Exec("TRUNCATE members_github_users")
 	if ErrTruncateGitHubUsers != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
 		return ErrTruncateGitHubUsers
 	}
 
 	_, ErrTruncateWebServices := tx.Exec("TRUNCATE webservices")
 	if ErrTruncateWebServices != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
 		return ErrTruncateWebServices
 	}
 
 	_, ErrSetForeignKeyTrue := tx.Exec("SET FOREIGN_KEY_CHECKS=1")
 	if ErrSetForeignKeyTrue != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
 		return ErrSetForeignKeyTrue
 	}

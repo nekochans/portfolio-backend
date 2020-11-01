@@ -34,8 +34,8 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 
 	stmt, ErrPrepare := m.Db.Prepare(sql)
 	if ErrPrepare != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
-		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
+		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
 	}
 
 	defer func() {
@@ -48,8 +48,8 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 	rows, ErrQuery := stmt.Query()
 
 	if ErrQuery != nil {
-		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: ErrQuery}
-		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "stmt.Query Error", Err: ErrQuery}
+		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
 	}
 
 	var tableData WebServiceFindAllTableData
@@ -66,15 +66,15 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		)
 
 		if ErrRowsScan != nil {
-			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrRowsScan}
-			return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
+			ErrBackend := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrRowsScan}
+			return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
 		}
 	}
 
 	// この条件の時はデータが1件も存在しない
 	if tableData.Id == 0 {
-		appErr := &domain.BackendError{Msg: "WebServices Not Found"}
-		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "WebServices Not Found"}
+		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
 	}
 
 	return ws, nil

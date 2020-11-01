@@ -113,8 +113,8 @@ func StartHttpServer() {
 
 	db, ErrConnectDb := sql.Open("mysql", config.GetDsn())
 	if ErrConnectDb != nil {
-		mysqlErr := xerrors.Errorf("Unable to connect to MySQL server: %w", ErrConnectDb)
-		logger.Error(ErrConnectDb.Error(), zap.Error(mysqlErr))
+		ErrMysqlConnect := xerrors.Errorf("Unable to connect to MySQL server: %w", ErrConnectDb)
+		logger.Error(ErrConnectDb.Error(), zap.Error(ErrMysqlConnect))
 	}
 
 	r := chi.NewRouter()

@@ -41,8 +41,8 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	stmt, ErrPrepare := m.Db.Prepare(sql)
 
 	if ErrPrepare != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
-		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
+		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", ErrBackend)
 	}
 
 	defer func() {
@@ -58,12 +58,12 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	if ErrQuery != nil {
 		// この条件の時はデータが1件も存在しない
 		if ErrQuery.Error() == "sql: no rows in result set" {
-			appErr := &domain.BackendError{Msg: "Member Not Found"}
-			return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
+			ErrBackend := &domain.BackendError{Msg: "Member Not Found"}
+			return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", ErrBackend)
 		}
 
-		appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrQuery}
-		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrQuery}
+		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", ErrBackend)
 	}
 
 	me := &Openapi.Member{
@@ -103,8 +103,8 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 
 	stmt, ErrPrepare := m.Db.Prepare(sql)
 	if ErrPrepare != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
-		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 	}
 
 	defer func() {
@@ -117,8 +117,8 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 	rows, ErrQuery := stmt.Query()
 
 	if ErrQuery != nil {
-		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: ErrQuery}
-		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "stmt.Query Error", Err: ErrQuery}
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 	}
 
 	var tableData FindAllTableData
@@ -136,15 +136,15 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		)
 
 		if ErrRowsScan != nil {
-			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrRowsScan}
-			return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+			ErrBackend := &domain.BackendError{Msg: "rows.Scan Error", Err: ErrRowsScan}
+			return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 		}
 	}
 
 	// この条件の時はデータが1件も存在しない
 	if tableData.Id == 0 {
-		appErr := &domain.BackendError{Msg: "Members Not Found"}
-		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+		ErrBackend := &domain.BackendError{Msg: "Members Not Found"}
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 	}
 
 	return ms, nil
