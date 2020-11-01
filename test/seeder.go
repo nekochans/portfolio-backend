@@ -105,12 +105,12 @@ func (s *Seeder) TruncateAllTable() error {
 func (s *Seeder) loadDataFromCsv(tx *sql.Tx, table, filePath string) (sql.Result, error) {
 	q := `
 		LOAD DATA
-			LOCAL INFILE "%s"
+			LOCAL INFILE '%s'
 		INTO TABLE %s
 		FIELDS
-			TERMINATED BY ","
+			TERMINATED BY ','
 		LINES
-			TERMINATED BY "\n"
+			TERMINATED BY '\n'
 			IGNORE 1 LINES
 	`
 
