@@ -22,10 +22,10 @@ func (h *HttpErrorCreator) CreateFromMsg(msg string) Openapi.Error {
 		message = msg
 	}
 
-	he := Openapi.Error{
+	err := Openapi.Error{
 		Code:    code,
 		Message: message,
 	}
 
-	return he
+	return err
 }

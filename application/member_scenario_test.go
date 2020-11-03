@@ -13,20 +13,20 @@ import (
 )
 
 func fixtureTestMemberScenarioFetchFromMysqlSucceed(t *testing.T, db *sql.DB) {
-	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchfrommysql/succeed")
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
+	testDataDir, ErrFilepath := filepath.Abs("../test/data/memberscenario/fetchfrommysql/succeed")
+	if ErrFilepath != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", ErrFilepath)
 	}
 
 	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
-	err = seeder.TruncateAllTable()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
+	ErrTruncate := seeder.TruncateAllTable()
+	if ErrTruncate != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", ErrTruncate)
 	}
 
-	err = seeder.Execute()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", err)
+	ErrSeeder := seeder.Execute()
+	if ErrSeeder != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchFromMysqlSucceed Error", ErrSeeder)
 	}
 }
 
@@ -39,20 +39,20 @@ func fixtureTestMemberScenarioFetchFromMysqlFailureMembersNotFound(t *testing.T,
 }
 
 func fixtureTestMemberScenarioFetchAllFromMysqlSucceed(t *testing.T, db *sql.DB) {
-	testDataDir, err := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
+	testDataDir, ErrFilepath := filepath.Abs("../test/data/memberscenario/fetchallfrommysql/succeed")
+	if ErrFilepath != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", ErrFilepath)
 	}
 
 	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
-	err = seeder.TruncateAllTable()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
+	ErrTruncate := seeder.TruncateAllTable()
+	if ErrTruncate != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", ErrTruncate)
 	}
 
-	err = seeder.Execute()
-	if err != nil {
-		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", err)
+	ErrSeeder := seeder.Execute()
+	if ErrSeeder != nil {
+		t.Fatal("fixtureTestMemberScenarioFetchAllFromMysqlSucceed Error", ErrSeeder)
 	}
 }
 
@@ -77,10 +77,10 @@ func TestMemberScenarioFetchFromMysqlSucceed(t *testing.T) {
 	}
 
 	repo := &repository.MysqlMemberRepository{Db: db}
-	ms := &MemberScenario{MemberRepository: repo}
+	scenario := &MemberScenario{MemberRepository: repo}
 	req := &MemberFetchRequest{Id: 1}
 
-	res, err := ms.FetchFromMysql(*req)
+	res, err := scenario.FetchFromMysql(*req)
 
 	if err != nil {
 		t.Error("\nActually: ", err, "\nExpected: ", expected)
@@ -97,10 +97,10 @@ func TestMemberScenarioFetchFromMysqlFailureMemberNotFound(t *testing.T) {
 	fixtureTestMemberScenarioFetchFromMysqlFailureMembersNotFound(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
-	ms := &MemberScenario{MemberRepository: repo}
+	scenario := &MemberScenario{MemberRepository: repo}
 	req := &MemberFetchRequest{Id: 99}
 
-	res, err := ms.FetchFromMysql(*req)
+	res, err := scenario.FetchFromMysql(*req)
 	expected := "MysqlMemberRepository.Find: Member Not Found"
 
 	if res != nil {
@@ -137,8 +137,8 @@ func TestMemberScenarioFetchAllMemorySucceed(t *testing.T) {
 		},
 	)
 
-	ms := &MemberScenario{}
-	res := ms.FetchAll()
+	scenario := &MemberScenario{}
+	res := scenario.FetchAll()
 
 	for i, member := range res.Items {
 		if reflect.DeepEqual(member, expected[i]) == false {
@@ -153,8 +153,8 @@ func TestMemberScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 	fixtureTestMemberScenarioFetchAllFromMysqlSucceed(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
-	ms := &MemberScenario{MemberRepository: repo}
-	res, err := ms.FetchAllFromMysql()
+	scenario := &MemberScenario{MemberRepository: repo}
+	res, err := scenario.FetchAllFromMysql()
 
 	var expected domain.Members
 
@@ -191,8 +191,8 @@ func TestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t *testing.T) {
 	fixtureTestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
-	ms := &MemberScenario{MemberRepository: repo}
-	res, err := ms.FetchAllFromMysql()
+	scenario := &MemberScenario{MemberRepository: repo}
+	res, err := scenario.FetchAllFromMysql()
 	expected := "MysqlMemberRepository.FindAll: Members Not Found"
 
 	if res != nil {

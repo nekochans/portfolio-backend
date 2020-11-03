@@ -1,10 +1,10 @@
 package domain
 
 type BackendError struct {
-	Msg string
-	Err error
+	Message string
+	Err     error
 }
 
 func (e *BackendError) Error() string {
-	return e.Msg
+	return e.Message
 }

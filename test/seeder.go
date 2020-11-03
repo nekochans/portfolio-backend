@@ -16,14 +16,14 @@ type Seeder struct {
 }
 
 func (s *Seeder) Execute() error {
-	files, err := ioutil.ReadDir(s.DirPath)
-	if err != nil {
-		return err
+	files, ErrReadDir := ioutil.ReadDir(s.DirPath)
+	if ErrReadDir != nil {
+		return ErrReadDir
 	}
 
-	tx, err := s.Db.Begin()
-	if err != nil {
-		return err
+	tx, ErrTransactionBegin := s.Db.Begin()
+	if ErrTransactionBegin != nil {
+		return ErrTransactionBegin
 	}
 
 	for _, file := range files {
@@ -35,12 +35,12 @@ func (s *Seeder) Execute() error {
 		table := file.Name()[:len(file.Name())-len(ext)]
 		csvFilePath := filepath.Join(s.DirPath, file.Name())
 
-		if _, err := loadDataFromCSV(tx, table, csvFilePath); err != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+		if _, ErrLoadData := s.loadDataFromCsv(tx, table, csvFilePath); ErrLoadData != nil {
+			ErrRollback := tx.Rollback()
+			if ErrRollback != nil {
+				log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 			}
-			return err
+			return ErrLoadData
 		}
 	}
 
@@ -48,61 +48,62 @@ func (s *Seeder) Execute() error {
 }
 
 func (s *Seeder) TruncateAllTable() error {
-	tx, err := s.Db.Begin()
-	if err != nil {
-		return err
+	tx, ErrTransactionBegin := s.Db.Begin()
+	if ErrTransactionBegin != nil {
+		return ErrTransactionBegin
 	}
 
-	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=0")
-	if err != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+	_, ErrSetForeignKeyFalse := tx.Exec("SET FOREIGN_KEY_CHECKS=0")
+	if ErrSetForeignKeyFalse != nil {
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrSetForeignKeyFalse
 	}
 
-	_, err = tx.Exec("TRUNCATE members")
-	if err != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+	// TODO テーブル分ループさせるように改修を行う
+	_, ErrTruncateMembers := tx.Exec("TRUNCATE members")
+	if ErrTruncateMembers != nil {
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrTruncateMembers
 	}
 
-	_, err = tx.Exec("TRUNCATE members_github_users")
-	if err != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+	_, ErrTruncateGitHubUsers := tx.Exec("TRUNCATE members_github_users")
+	if ErrTruncateGitHubUsers != nil {
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrTruncateGitHubUsers
 	}
 
-	_, err = tx.Exec("TRUNCATE webservices")
-	if err != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+	_, ErrTruncateWebServices := tx.Exec("TRUNCATE webservices")
+	if ErrTruncateWebServices != nil {
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrTruncateWebServices
 	}
 
-	_, err = tx.Exec("SET FOREIGN_KEY_CHECKS=1")
-	if err != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			log.Fatal(rollbackErr, "Transaction.Rollback() Fatal.")
+	_, ErrSetForeignKeyTrue := tx.Exec("SET FOREIGN_KEY_CHECKS=1")
+	if ErrSetForeignKeyTrue != nil {
+		ErrRollback := tx.Rollback()
+		if ErrRollback != nil {
+			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
 		}
-		return err
+		return ErrSetForeignKeyTrue
 	}
 
 	return tx.Commit()
 }
 
-func loadDataFromCSV(tx *sql.Tx, table, filePath string) (sql.Result, error) {
-	s := `
+func (s *Seeder) loadDataFromCsv(tx *sql.Tx, table, filePath string) (sql.Result, error) {
+	query := `
 		LOAD DATA
 			LOCAL INFILE '%s'
 		INTO TABLE %s
@@ -115,5 +116,5 @@ func loadDataFromCSV(tx *sql.Tx, table, filePath string) (sql.Result, error) {
 
 	mysql.RegisterLocalFile(filePath)
 
-	return tx.Exec(fmt.Sprintf(s, filePath, table))
+	return tx.Exec(fmt.Sprintf(query, filePath, table))
 }

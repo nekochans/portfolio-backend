@@ -27,13 +27,13 @@ type MemberFetchAllResponse struct {
 }
 
 func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
-	var ms domain.Members
+	var item domain.Members
 
 	const keitaMemberId = 1
 	const mopMemberId = 2
 
-	ms = append(
-		ms,
+	item = append(
+		item,
 		&Openapi.Member{
 			Id:             keitaMemberId,
 			GithubUserName: "keitakn",
@@ -42,8 +42,8 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 		},
 	)
 
-	ms = append(
-		ms,
+	item = append(
+		item,
 		&Openapi.Member{
 			Id:             mopMemberId,
 			GithubUserName: "kobayashi-m42",
@@ -52,7 +52,7 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 		},
 	)
 
-	return &MemberFetchAllResponse{Items: ms}
+	return &MemberFetchAllResponse{Items: item}
 }
 
 func (m *MemberScenario) FetchAllFromMysql() (*MemberFetchAllResponse, error) {

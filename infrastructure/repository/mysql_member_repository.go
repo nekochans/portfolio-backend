@@ -22,7 +22,7 @@ type FindTableData struct {
 }
 
 func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
-	sql := `
+	query := `
 		SELECT
 		  m.id AS Id,
 		  mgu.github_id AS GithubId,
@@ -38,11 +38,11 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 			m.id = ?
 	`
 
-	stmt, err := m.Db.Prepare(sql)
+	stmt, ErrPrepare := m.Db.Prepare(query)
 
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: err}
-		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
+	if ErrPrepare != nil {
+		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
+		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", ErrBackend)
 	}
 
 	defer func() {
@@ -54,26 +54,26 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 
 	var tableData FindTableData
 
-	err = stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
-	if err != nil {
+	ErrQuery := stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
+	if ErrQuery != nil {
 		// この条件の時はデータが1件も存在しない
-		if err.Error() == "sql: no rows in result set" {
-			appErr := &domain.BackendError{Msg: "Member Not Found"}
-			return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
+		if ErrQuery.Error() == "sql: no rows in result set" {
+			ErrBackend := &domain.BackendError{Message: "Member Not Found"}
+			return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", ErrBackend)
 		}
 
-		appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
-		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", appErr)
+		ErrBackend := &domain.BackendError{Message: "rows.Scan Error", Err: ErrQuery}
+		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", ErrBackend)
 	}
 
-	me := &Openapi.Member{
+	member := &Openapi.Member{
 		Id:             tableData.Id,
 		GithubUserName: tableData.GithubId,
 		GithubPicture:  tableData.AvatarUrl,
 		CvUrl:          "https://github.com/" + tableData.GithubId + "/" + tableData.CvRepoName,
 	}
 
-	return me, nil
+	return member, nil
 }
 
 type FindAllTableData struct {
@@ -84,7 +84,7 @@ type FindAllTableData struct {
 }
 
 func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
-	sql := `
+	query := `
 		SELECT
 		  m.id AS Id,
 		  mgu.github_id AS GithubId,
@@ -101,32 +101,32 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		ASC
 	`
 
-	stmt, err := m.Db.Prepare(sql)
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "Db.Prepare Error", Err: err}
-		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+	stmt, ErrPrepare := m.Db.Prepare(query)
+	if ErrPrepare != nil {
+		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 	}
 
 	defer func() {
-		err := stmt.Close()
-		if err != nil {
-			log.Fatal(err, "stmt.Close() Fatal.")
+		ErrStmtClose := stmt.Close()
+		if ErrStmtClose != nil {
+			log.Fatal(ErrStmtClose, "stmt.Close() Fatal.")
 		}
 	}()
 
-	rows, err := stmt.Query()
+	rows, ErrQuery := stmt.Query()
 
-	if err != nil {
-		appErr := &domain.BackendError{Msg: "stmt.Query Error", Err: err}
-		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+	if ErrQuery != nil {
+		ErrBackend := &domain.BackendError{Message: "stmt.Query Error", Err: ErrQuery}
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 	}
 
 	var tableData FindAllTableData
-	var ms domain.Members
+	var members domain.Members
 	for rows.Next() {
-		err := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
-		ms = append(
-			ms,
+		ErrRowsScan := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
+		members = append(
+			members,
 			&Openapi.Member{
 				Id:             tableData.Id,
 				GithubUserName: tableData.GithubId,
@@ -135,17 +135,17 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 			},
 		)
 
-		if err != nil {
-			appErr := &domain.BackendError{Msg: "rows.Scan Error", Err: err}
-			return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+		if ErrRowsScan != nil {
+			ErrBackend := &domain.BackendError{Message: "rows.Scan Error", Err: ErrRowsScan}
+			return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 		}
 	}
 
 	// この条件の時はデータが1件も存在しない
 	if tableData.Id == 0 {
-		appErr := &domain.BackendError{Msg: "Members Not Found"}
-		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", appErr)
+		ErrBackend := &domain.BackendError{Message: "Members Not Found"}
+		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 	}
 
-	return ms, nil
+	return members, nil
 }

@@ -9,7 +9,7 @@ import (
 
 type DbCreator struct{}
 
-func (d *DbCreator) Create(t *testing.T) *sql.DB {
+func (c *DbCreator) Create(t *testing.T) *sql.DB {
 	db, err := sql.Open("mysql", config.GetTestDsn())
 
 	if err != nil {

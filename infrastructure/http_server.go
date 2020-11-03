@@ -25,40 +25,40 @@ type HttpServer struct {
 	Logger      *zap.Logger
 }
 
-func (hs *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlMemberRepository{Db: hs.Db}
+func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
+	repo := &repository.MysqlMemberRepository{Db: s.Db}
 
-	ms := application.MemberScenario{MemberRepository: repo}
-	ml, err := ms.FetchAllFromMysql()
+	scenario := application.MemberScenario{MemberRepository: repo}
+	members, err := scenario.FetchAllFromMysql()
 
 	if err != nil {
 		CreateErrorResponse(w, r, err)
 		return
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, ml)
+	CreateJsonResponse(w, r, http.StatusOK, members)
 }
 
-func (hs *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
-	repo := &repository.MysqlMemberRepository{Db: hs.Db}
-	ms := application.MemberScenario{MemberRepository: repo}
+func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
+	repo := &repository.MysqlMemberRepository{Db: s.Db}
+	scenario := application.MemberScenario{MemberRepository: repo}
 
 	req := &application.MemberFetchRequest{Id: id}
-	me, err := ms.FetchFromMysql(*req)
+	member, err := scenario.FetchFromMysql(*req)
 	if err != nil {
 		CreateErrorResponse(w, r, err)
 		return
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, me)
+	CreateJsonResponse(w, r, http.StatusOK, member)
 }
 
-func (hs *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlWebServiceRepository{Db: hs.Db}
+func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
+	repo := &repository.MysqlWebServiceRepository{Db: s.Db}
 
-	ws := &application.WebServiceScenario{WebServiceRepository: repo}
+	scenario := &application.WebServiceScenario{WebServiceRepository: repo}
 
-	res, err := ws.FetchAllFromMysql()
+	res, err := scenario.FetchAllFromMysql()
 	if err != nil {
 		CreateErrorResponse(w, r, err)
 		return
@@ -67,31 +67,31 @@ func (hs *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 	CreateJsonResponse(w, r, http.StatusOK, res)
 }
 
-func (hs *HttpServer) middleware() {
+func (s *HttpServer) middleware() {
 	const timeoutSecond = 60
 
-	hs.Router.Use(middleware.RequestID)
-	hs.Router.Use(Logger(hs.Logger))
-	hs.Router.Use(middleware.Recoverer)
-	hs.Router.Use(middleware.Timeout(time.Second * timeoutSecond))
+	s.Router.Use(middleware.RequestID)
+	s.Router.Use(Logger(s.Logger))
+	s.Router.Use(middleware.Recoverer)
+	s.Router.Use(middleware.Timeout(time.Second * timeoutSecond))
 }
 
-func (hs *HttpServer) Init(env string) {
-	hs.middleware()
+func (s *HttpServer) Init(env string) {
+	s.middleware()
 }
 
-func NewHttpServer(logger *zap.Logger, router *chi.Mux) *HttpServer {
+func NewHttpServer(l *zap.Logger, r *chi.Mux) *HttpServer {
 	return &HttpServer{
-		Router: router,
-		Logger: logger,
+		Router: r,
+		Logger: l,
 	}
 }
 
-func NewHttpServerWithMysql(db *sql.DB, logger *zap.Logger, router *chi.Mux) *HttpServer {
+func NewHttpServerWithMysql(d *sql.DB, l *zap.Logger, r *chi.Mux) *HttpServer {
 	return &HttpServer{
-		Router: router,
-		Db:     db,
-		Logger: logger,
+		Router: r,
+		Db:     d,
+		Logger: l,
 	}
 }
 
@@ -104,25 +104,25 @@ func StartHttpServer() {
 
 	logger := CreateLogger()
 	defer func() {
-		err := logger.Sync()
-		if err != nil {
-			loggerSyncErr := xerrors.Errorf("Unable to connect to MySQL server: %w", err)
-			logger.Error(err.Error(), zap.Error(loggerSyncErr))
+		ErrSync := logger.Sync()
+		if ErrSync != nil {
+			ErrLoggerSync := xerrors.Errorf("Failed to logger Sync: %w", ErrSync)
+			logger.Error(ErrSync.Error(), zap.Error(ErrLoggerSync))
 		}
 	}()
 
-	db, err := sql.Open("mysql", config.GetDsn())
-	if err != nil {
-		mysqlErr := xerrors.Errorf("Unable to connect to MySQL server: %w", err)
-		logger.Error(err.Error(), zap.Error(mysqlErr))
+	db, ErrConnectDb := sql.Open("mysql", config.GetDsn())
+	if ErrConnectDb != nil {
+		ErrMysqlConnect := xerrors.Errorf("Unable to connect to MySQL server: %w", ErrConnectDb)
+		logger.Error(ErrConnectDb.Error(), zap.Error(ErrMysqlConnect))
 	}
 
-	r := chi.NewRouter()
-	s := NewHttpServerWithMysql(db, logger, r)
-	s.Init(*env)
+	router := chi.NewRouter()
+	server := NewHttpServerWithMysql(db, logger, router)
+	server.Init(*env)
 
-	s.HttpHandler = Openapi.HandlerFromMux(s, s.Router)
+	server.HttpHandler = Openapi.HandlerFromMux(server, server.Router)
 
 	log.Println("Starting app")
-	_ = http.ListenAndServe(fmt.Sprint(":", *port), s.Router)
+	_ = http.ListenAndServe(fmt.Sprint(":", *port), server.Router)
 }

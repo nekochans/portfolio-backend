@@ -24,8 +24,8 @@ func TestWebServiceScenarioFetchAllFromMemorySucceed(t *testing.T) {
 		},
 	)
 
-	ws := &WebServiceScenario{}
-	res := ws.FetchAll()
+	scenario := &WebServiceScenario{}
+	res := scenario.FetchAll()
 
 	for i, webService := range res.Items {
 		if reflect.DeepEqual(webService, expected[i]) == false {
@@ -35,20 +35,20 @@ func TestWebServiceScenarioFetchAllFromMemorySucceed(t *testing.T) {
 }
 
 func fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T, db *sql.DB) {
-	testDataDir, err := filepath.Abs("../test/data/webservicescenario/fetchallfrommysql/succeed")
-	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
+	testDataDir, ErrFilepath := filepath.Abs("../test/data/webservicescenario/fetchallfrommysql/succeed")
+	if ErrFilepath != nil {
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", ErrFilepath)
 	}
 
 	seeder := &test.Seeder{Db: db, DirPath: testDataDir}
-	err = seeder.TruncateAllTable()
-	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
+	ErrTruncate := seeder.TruncateAllTable()
+	if ErrTruncate != nil {
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", ErrTruncate)
 	}
 
-	err = seeder.Execute()
-	if err != nil {
-		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", err)
+	ErrSeeder := seeder.Execute()
+	if ErrSeeder != nil {
+		t.Fatal("fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed Error", ErrSeeder)
 	}
 }
 
@@ -66,8 +66,8 @@ func TestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 	fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}
-	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMysql()
+	scenario := &WebServiceScenario{WebServiceRepository: repo}
+	res, err := scenario.FetchAllFromMysql()
 
 	var expected domain.WebServices
 
@@ -97,8 +97,8 @@ func TestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t *testin
 	fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}
-	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMysql()
+	scenario := &WebServiceScenario{WebServiceRepository: repo}
+	res, err := scenario.FetchAllFromMysql()
 	expected := "MysqlWebServiceRepository.FindAll: WebServices Not Found"
 
 	if res != nil {

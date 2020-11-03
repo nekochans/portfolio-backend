@@ -13,6 +13,7 @@ format:
 	@gofmt -l -s -w .
 	@goimports -w -l ./
 test:
+	@go clean -testcache
 	@go test -v ./...
 test-ci:
 	@go test -v -coverprofile coverage.out -covermode atomic ./...
