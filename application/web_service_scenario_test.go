@@ -24,8 +24,8 @@ func TestWebServiceScenarioFetchAllFromMemorySucceed(t *testing.T) {
 		},
 	)
 
-	ws := &WebServiceScenario{}
-	res := ws.FetchAll()
+	scenario := &WebServiceScenario{}
+	res := scenario.FetchAll()
 
 	for i, webService := range res.Items {
 		if reflect.DeepEqual(webService, expected[i]) == false {
@@ -66,8 +66,8 @@ func TestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 	fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}
-	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMysql()
+	scenario := &WebServiceScenario{WebServiceRepository: repo}
+	res, err := scenario.FetchAllFromMysql()
 
 	var expected domain.WebServices
 
@@ -97,8 +97,8 @@ func TestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t *testin
 	fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}
-	ws := &WebServiceScenario{WebServiceRepository: repo}
-	res, err := ws.FetchAllFromMysql()
+	scenario := &WebServiceScenario{WebServiceRepository: repo}
+	res, err := scenario.FetchAllFromMysql()
 	expected := "MysqlWebServiceRepository.FindAll: WebServices Not Found"
 
 	if res != nil {

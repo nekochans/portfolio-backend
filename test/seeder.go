@@ -103,7 +103,7 @@ func (s *Seeder) TruncateAllTable() error {
 }
 
 func (s *Seeder) loadDataFromCsv(tx *sql.Tx, table, filePath string) (sql.Result, error) {
-	q := `
+	query := `
 		LOAD DATA
 			LOCAL INFILE '%s'
 		INTO TABLE %s
@@ -116,5 +116,5 @@ func (s *Seeder) loadDataFromCsv(tx *sql.Tx, table, filePath string) (sql.Result
 
 	mysql.RegisterLocalFile(filePath)
 
-	return tx.Exec(fmt.Sprintf(q, filePath, table))
+	return tx.Exec(fmt.Sprintf(query, filePath, table))
 }

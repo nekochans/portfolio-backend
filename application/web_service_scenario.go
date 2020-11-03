@@ -14,10 +14,10 @@ type WebServiceFetchAllResponse struct {
 }
 
 func (w *WebServiceScenario) FetchAll() *WebServiceFetchAllResponse {
-	var ws domain.WebServices
+	var item domain.WebServices
 
-	ws = append(
-		ws,
+	item = append(
+		item,
 		&Openapi.WebService{
 			Id:          1,
 			Url:         "https://www.mindexer.net",
@@ -25,7 +25,7 @@ func (w *WebServiceScenario) FetchAll() *WebServiceFetchAllResponse {
 		},
 	)
 
-	return &WebServiceFetchAllResponse{Items: ws}
+	return &WebServiceFetchAllResponse{Items: item}
 }
 
 func (w *WebServiceScenario) FetchAllFromMysql() (*WebServiceFetchAllResponse, error) {

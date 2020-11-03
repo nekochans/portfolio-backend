@@ -12,21 +12,21 @@ import (
 func Logger(l *zap.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
-			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+			writer := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
-			t1 := time.Now()
+			now := time.Now()
 			defer func() {
 				// TODO r.Bodyをログに出したほうが良さそう
 				l.Info("message",
 					zap.String("protocol", r.Proto),
 					zap.String("path", r.URL.Path),
-					zap.Duration("lat", time.Since(t1)),
-					zap.Int("HttpStatus", ww.Status()),
-					zap.Int("size", ww.BytesWritten()),
+					zap.Duration("lat", time.Since(now)),
+					zap.Int("HttpStatus", writer.Status()),
+					zap.Int("size", writer.BytesWritten()),
 					zap.String("RequestId", middleware.GetReqID(r.Context())))
 			}()
 
-			next.ServeHTTP(ww, r)
+			next.ServeHTTP(writer, r)
 		}
 		return http.HandlerFunc(fn)
 	}
@@ -44,8 +44,8 @@ func CreateLogger() *zap.Logger {
 			LevelKey:       "level",
 			NameKey:        "name",
 			CallerKey:      "caller",
-			MessageKey:     "msg",
-			StacktraceKey:  "st",
+			MessageKey:     "message",
+			StacktraceKey:  "stackTrace",
 			EncodeLevel:    zapcore.CapitalLevelEncoder,
 			EncodeTime:     zapcore.ISO8601TimeEncoder,
 			EncodeDuration: zapcore.StringDurationEncoder,

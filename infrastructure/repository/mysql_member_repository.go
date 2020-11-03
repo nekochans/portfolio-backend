@@ -22,7 +22,7 @@ type FindTableData struct {
 }
 
 func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
-	sql := `
+	query := `
 		SELECT
 		  m.id AS Id,
 		  mgu.github_id AS GithubId,
@@ -38,7 +38,7 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 			m.id = ?
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(sql)
+	stmt, ErrPrepare := m.Db.Prepare(query)
 
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
@@ -66,14 +66,14 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 		return nil, xerrors.Errorf("MysqlMemberRepository.Find: %w", ErrBackend)
 	}
 
-	me := &Openapi.Member{
+	member := &Openapi.Member{
 		Id:             tableData.Id,
 		GithubUserName: tableData.GithubId,
 		GithubPicture:  tableData.AvatarUrl,
 		CvUrl:          "https://github.com/" + tableData.GithubId + "/" + tableData.CvRepoName,
 	}
 
-	return me, nil
+	return member, nil
 }
 
 type FindAllTableData struct {
@@ -84,7 +84,7 @@ type FindAllTableData struct {
 }
 
 func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
-	sql := `
+	query := `
 		SELECT
 		  m.id AS Id,
 		  mgu.github_id AS GithubId,
@@ -101,7 +101,7 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		ASC
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(sql)
+	stmt, ErrPrepare := m.Db.Prepare(query)
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
@@ -122,11 +122,11 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 	}
 
 	var tableData FindAllTableData
-	var ms domain.Members
+	var members domain.Members
 	for rows.Next() {
 		ErrRowsScan := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
-		ms = append(
-			ms,
+		members = append(
+			members,
 			&Openapi.Member{
 				Id:             tableData.Id,
 				GithubUserName: tableData.GithubId,
@@ -147,5 +147,5 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
 	}
 
-	return ms, nil
+	return members, nil
 }

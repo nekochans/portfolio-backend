@@ -20,7 +20,7 @@ type WebServiceFindAllTableData struct {
 }
 
 func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
-	sql := `
+	query := `
 		SELECT
 		  id,
 		  url,
@@ -32,7 +32,7 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		ASC
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(sql)
+	stmt, ErrPrepare := m.Db.Prepare(query)
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Msg: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
@@ -53,11 +53,11 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 	}
 
 	var tableData WebServiceFindAllTableData
-	var ws domain.WebServices
+	var webServices domain.WebServices
 	for rows.Next() {
 		ErrRowsScan := rows.Scan(&tableData.Id, &tableData.Url, &tableData.Description)
-		ws = append(
-			ws,
+		webServices = append(
+			webServices,
 			&Openapi.WebService{
 				Id:          tableData.Id,
 				Url:         tableData.Url,
@@ -77,5 +77,5 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
 	}
 
-	return ws, nil
+	return webServices, nil
 }
