@@ -9,7 +9,7 @@ import (
 )
 
 func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payload interface{}) error {
-	res, ErrJsonEncode := json.MarshalIndent(payload, "", "    ")
+	res, ErrJsonEncode := json.Marshal(payload)
 	if ErrJsonEncode != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, ErrWriteResponse := w.Write([]byte(ErrJsonEncode.Error()))
