@@ -2,22 +2,21 @@ package infrastructure
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
 )
 
-func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payload interface{}) {
+func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payload interface{}) error {
 	res, ErrJsonEncode := json.MarshalIndent(payload, "", "    ")
 	if ErrJsonEncode != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, ErrWriteResponse := w.Write([]byte(ErrJsonEncode.Error()))
 		if ErrWriteResponse != nil {
-			log.Fatal(ErrWriteResponse, "http.ResponseWriter() Fatal.")
+			return ErrWriteResponse
 		}
-		return
+		return ErrJsonEncode
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -25,16 +24,17 @@ func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payl
 	w.WriteHeader(status)
 	_, ErrWriteHeader := w.Write(res)
 	if ErrWriteHeader != nil {
-		log.Fatal(ErrWriteHeader, "http.ResponseWriter() Fatal.")
+		return ErrWriteHeader
 	}
+
+	return nil
 }
 
-// respondError レスポンスとして返すエラーを生成する
-func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
+func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) error {
 	logger := CreateLogger()
 	logger.Error(err.Error(), zap.String("RequestId", middleware.GetReqID(r.Context())))
 
 	errCreator := &HttpErrorCreator{}
 	httpError := errCreator.CreateFromMsg(err.Error())
-	CreateJsonResponse(w, r, httpError.Code, httpError)
+	return CreateJsonResponse(w, r, httpError.Code, httpError)
 }

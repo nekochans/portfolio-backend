@@ -66,7 +66,11 @@ func fixtureTestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t *testing
 
 func TestMemberScenarioFetchFromMysqlSucceed(t *testing.T) {
 	dbCreator := &test.DbCreator{}
-	db := dbCreator.Create(t)
+	db, ErrTestDbConnect := dbCreator.Create()
+	if ErrTestDbConnect != nil {
+		t.Fatal("Test DB Connect Error", ErrTestDbConnect)
+	}
+
 	fixtureTestMemberScenarioFetchFromMysqlSucceed(t, db)
 
 	expected := &Openapi.Member{
@@ -93,7 +97,10 @@ func TestMemberScenarioFetchFromMysqlSucceed(t *testing.T) {
 
 func TestMemberScenarioFetchFromMysqlFailureMemberNotFound(t *testing.T) {
 	dbCreator := &test.DbCreator{}
-	db := dbCreator.Create(t)
+	db, ErrTestDbConnect := dbCreator.Create()
+	if ErrTestDbConnect != nil {
+		t.Fatal("Test DB Connect Error", ErrTestDbConnect)
+	}
 	fixtureTestMemberScenarioFetchFromMysqlFailureMembersNotFound(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
@@ -149,7 +156,10 @@ func TestMemberScenarioFetchAllMemorySucceed(t *testing.T) {
 
 func TestMemberScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 	dbCreator := &test.DbCreator{}
-	db := dbCreator.Create(t)
+	db, ErrTestDbConnect := dbCreator.Create()
+	if ErrTestDbConnect != nil {
+		t.Fatal("Test DB Connect Error", ErrTestDbConnect)
+	}
 	fixtureTestMemberScenarioFetchAllFromMysqlSucceed(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}
@@ -187,7 +197,10 @@ func TestMemberScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 
 func TestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t *testing.T) {
 	dbCreator := &test.DbCreator{}
-	db := dbCreator.Create(t)
+	db, ErrTestDbConnect := dbCreator.Create()
+	if ErrTestDbConnect != nil {
+		t.Fatal("Test DB Connect Error", ErrTestDbConnect)
+	}
 	fixtureTestMemberScenarioFetchAllFromMysqlFailureMembersNotFound(t, db)
 
 	repo := &repository.MysqlMemberRepository{Db: db}

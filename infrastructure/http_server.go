@@ -32,11 +32,18 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	members, err := scenario.FetchAllFromMysql()
 
 	if err != nil {
-		CreateErrorResponse(w, r, err)
-		return
+		ErrCreateError := CreateErrorResponse(w, r, err)
+		if ErrCreateError != nil {
+			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
+			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+		}
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, members)
+	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, members)
+	if ErrCreateJson != nil {
+		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
+		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+	}
 }
 
 func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
@@ -46,11 +53,18 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 	req := &application.MemberFetchRequest{Id: id}
 	member, err := scenario.FetchFromMysql(*req)
 	if err != nil {
-		CreateErrorResponse(w, r, err)
-		return
+		ErrCreateError := CreateErrorResponse(w, r, err)
+		if ErrCreateError != nil {
+			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
+			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+		}
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, member)
+	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, member)
+	if ErrCreateJson != nil {
+		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
+		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+	}
 }
 
 func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
@@ -60,11 +74,18 @@ func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 
 	res, err := scenario.FetchAllFromMysql()
 	if err != nil {
-		CreateErrorResponse(w, r, err)
-		return
+		ErrCreateError := CreateErrorResponse(w, r, err)
+		if ErrCreateError != nil {
+			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
+			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+		}
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, res)
+	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, res)
+	if ErrCreateJson != nil {
+		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
+		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+	}
 }
 
 func (s *HttpServer) middleware() {
