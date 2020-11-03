@@ -29,10 +29,10 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MysqlMemberRepository{Db: s.Db}
 
 	scenario := application.MemberScenario{MemberRepository: repo}
-	members, err := scenario.FetchAllFromMysql()
+	members, ErrFetchAll := scenario.FetchAllFromMysql()
 
-	if err != nil {
-		ErrCreateError := CreateErrorResponse(w, r, err)
+	if ErrFetchAll != nil {
+		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
 		if ErrCreateError != nil {
 			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
 			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
@@ -51,9 +51,9 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 	scenario := application.MemberScenario{MemberRepository: repo}
 
 	req := &application.MemberFetchRequest{Id: id}
-	member, err := scenario.FetchFromMysql(*req)
-	if err != nil {
-		ErrCreateError := CreateErrorResponse(w, r, err)
+	member, ErrFetch := scenario.FetchFromMysql(*req)
+	if ErrFetch != nil {
+		ErrCreateError := CreateErrorResponse(w, r, ErrFetch)
 		if ErrCreateError != nil {
 			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
 			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
@@ -72,9 +72,9 @@ func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 
 	scenario := &application.WebServiceScenario{WebServiceRepository: repo}
 
-	res, err := scenario.FetchAllFromMysql()
-	if err != nil {
-		ErrCreateError := CreateErrorResponse(w, r, err)
+	res, ErrFetchAll := scenario.FetchAllFromMysql()
+	if ErrFetchAll != nil {
+		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
 		if ErrCreateError != nil {
 			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
 			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
