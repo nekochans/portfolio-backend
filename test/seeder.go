@@ -3,11 +3,11 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	"golang.org/x/xerrors"
 	"io/ioutil"
 	"path/filepath"
 
 	"github.com/go-sql-driver/mysql"
+	"golang.org/x/xerrors"
 )
 
 type Seeder struct {
