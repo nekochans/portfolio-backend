@@ -37,6 +37,8 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
 			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
 		}
+
+		return
 	}
 
 	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, members)
@@ -58,6 +60,7 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
 			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
 		}
+		return
 	}
 
 	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, member)
@@ -79,6 +82,7 @@ func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
 			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
 		}
+		return
 	}
 
 	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, res)
