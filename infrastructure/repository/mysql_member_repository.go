@@ -21,7 +21,7 @@ type FindTableData struct {
 	CvRepoName string
 }
 
-func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
+func (r *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	query := `
 		SELECT
 		  m.id AS Id,
@@ -38,7 +38,7 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 			m.id = ?
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(query)
+	stmt, ErrPrepare := r.Db.Prepare(query)
 
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
@@ -83,7 +83,7 @@ type FindAllTableData struct {
 	CvRepoName string
 }
 
-func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
+func (r *MysqlMemberRepository) FindAll() (domain.Members, error) {
 	query := `
 		SELECT
 		  m.id AS Id,
@@ -101,7 +101,7 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		ASC
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(query)
+	stmt, ErrPrepare := r.Db.Prepare(query)
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)

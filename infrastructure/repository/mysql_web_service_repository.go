@@ -19,7 +19,7 @@ type WebServiceFindAllTableData struct {
 	Description string
 }
 
-func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
+func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 	query := `
 		SELECT
 		  id,
@@ -32,7 +32,7 @@ func (m *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		ASC
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(query)
+	stmt, ErrPrepare := r.Db.Prepare(query)
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
