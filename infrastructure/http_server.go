@@ -26,7 +26,7 @@ type HttpServer struct {
 }
 
 func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlMemberRepository{Db: s.Db}
+	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
 
 	scenario := application.MemberScenario{MemberRepository: repo}
 	members, ErrFetchAll := scenario.FetchAllFromMysql()
@@ -49,7 +49,7 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
-	repo := &repository.MysqlMemberRepository{Db: s.Db}
+	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
 	scenario := application.MemberScenario{MemberRepository: repo}
 
 	req := &application.MemberFetchRequest{Id: id}
@@ -71,7 +71,7 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 }
 
 func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlWebServiceRepository{Db: s.Db}
+	repo := &repository.MysqlWebServiceRepository{Db: s.Db, Logger: s.Logger}
 
 	scenario := &application.WebServiceScenario{WebServiceRepository: repo}
 

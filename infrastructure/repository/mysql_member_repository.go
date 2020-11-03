@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"log"
 
+	"go.uber.org/zap"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
@@ -11,7 +13,8 @@ import (
 )
 
 type MysqlMemberRepository struct {
-	Db *sql.DB
+	Db     *sql.DB
+	Logger *zap.Logger
 }
 
 type FindTableData struct {
@@ -46,9 +49,9 @@ func (r *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	}
 
 	defer func() {
-		err := stmt.Close()
-		if err != nil {
-			log.Fatal(err, "stmt.Close() Fatal.")
+		ErrStmtClose := stmt.Close()
+		if ErrStmtClose != nil {
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
 		}
 	}()
 

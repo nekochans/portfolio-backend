@@ -2,15 +2,16 @@ package repository
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
+	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 )
 
 type MysqlWebServiceRepository struct {
-	Db *sql.DB
+	Db     *sql.DB
+	Logger *zap.Logger
 }
 
 type WebServiceFindAllTableData struct {
@@ -41,7 +42,7 @@ func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 	defer func() {
 		ErrStmtClose := stmt.Close()
 		if ErrStmtClose != nil {
-			log.Fatal(ErrStmtClose, "stmt.Close() Fatal.")
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
 		}
 	}()
 
