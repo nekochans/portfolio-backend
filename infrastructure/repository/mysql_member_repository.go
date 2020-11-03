@@ -2,8 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"log"
-
 	"go.uber.org/zap"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -113,7 +111,7 @@ func (r *MysqlMemberRepository) FindAll() (domain.Members, error) {
 	defer func() {
 		ErrStmtClose := stmt.Close()
 		if ErrStmtClose != nil {
-			log.Fatal(ErrStmtClose, "stmt.Close() Fatal.")
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
 		}
 	}()
 
