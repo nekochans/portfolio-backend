@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+
 	"go.uber.org/zap"
 
 	_ "github.com/go-sql-driver/mysql"
