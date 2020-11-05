@@ -26,45 +26,70 @@ type HttpServer struct {
 }
 
 func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlMemberRepository{Db: s.Db}
+	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
 
 	scenario := application.MemberScenario{MemberRepository: repo}
-	members, err := scenario.FetchAllFromMysql()
+	members, ErrFetchAll := scenario.FetchAllFromMysql()
 
-	if err != nil {
-		CreateErrorResponse(w, r, err)
+	if ErrFetchAll != nil {
+		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
+		if ErrCreateError != nil {
+			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
+			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+		}
+
 		return
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, members)
+	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, members)
+	if ErrCreateJson != nil {
+		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
+		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+	}
 }
 
 func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
-	repo := &repository.MysqlMemberRepository{Db: s.Db}
+	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
 	scenario := application.MemberScenario{MemberRepository: repo}
 
 	req := &application.MemberFetchRequest{Id: id}
-	member, err := scenario.FetchFromMysql(*req)
-	if err != nil {
-		CreateErrorResponse(w, r, err)
+	member, ErrFetch := scenario.FetchFromMysql(*req)
+	if ErrFetch != nil {
+		ErrCreateError := CreateErrorResponse(w, r, ErrFetch)
+		if ErrCreateError != nil {
+			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
+			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+		}
 		return
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, member)
+	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, member)
+	if ErrCreateJson != nil {
+		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
+		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+	}
 }
 
 func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
-	repo := &repository.MysqlWebServiceRepository{Db: s.Db}
+	repo := &repository.MysqlWebServiceRepository{Db: s.Db, Logger: s.Logger}
 
 	scenario := &application.WebServiceScenario{WebServiceRepository: repo}
 
-	res, err := scenario.FetchAllFromMysql()
-	if err != nil {
-		CreateErrorResponse(w, r, err)
+	res, ErrFetchAll := scenario.FetchAllFromMysql()
+	if ErrFetchAll != nil {
+		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
+		if ErrCreateError != nil {
+			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
+			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+		}
 		return
 	}
 
-	CreateJsonResponse(w, r, http.StatusOK, res)
+	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, res)
+	if ErrCreateJson != nil {
+		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
+		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+	}
 }
 
 func (s *HttpServer) middleware() {

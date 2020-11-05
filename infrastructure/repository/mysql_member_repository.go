@@ -2,7 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"log"
+
+	"go.uber.org/zap"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nekochans/portfolio-backend/domain"
@@ -11,7 +12,8 @@ import (
 )
 
 type MysqlMemberRepository struct {
-	Db *sql.DB
+	Db     *sql.DB
+	Logger *zap.Logger
 }
 
 type FindTableData struct {
@@ -21,7 +23,7 @@ type FindTableData struct {
 	CvRepoName string
 }
 
-func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
+func (r *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	query := `
 		SELECT
 		  m.id AS Id,
@@ -38,7 +40,7 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 			m.id = ?
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(query)
+	stmt, ErrPrepare := r.Db.Prepare(query)
 
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
@@ -46,9 +48,9 @@ func (m *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	}
 
 	defer func() {
-		err := stmt.Close()
-		if err != nil {
-			log.Fatal(err, "stmt.Close() Fatal.")
+		ErrStmtClose := stmt.Close()
+		if ErrStmtClose != nil {
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
 		}
 	}()
 
@@ -83,7 +85,7 @@ type FindAllTableData struct {
 	CvRepoName string
 }
 
-func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
+func (r *MysqlMemberRepository) FindAll() (domain.Members, error) {
 	query := `
 		SELECT
 		  m.id AS Id,
@@ -101,7 +103,7 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		ASC
 	`
 
-	stmt, ErrPrepare := m.Db.Prepare(query)
+	stmt, ErrPrepare := r.Db.Prepare(query)
 	if ErrPrepare != nil {
 		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
 		return nil, xerrors.Errorf("MysqlMemberRepository.FindAll: %w", ErrBackend)
@@ -110,7 +112,7 @@ func (m *MysqlMemberRepository) FindAll() (domain.Members, error) {
 	defer func() {
 		ErrStmtClose := stmt.Close()
 		if ErrStmtClose != nil {
-			log.Fatal(ErrStmtClose, "stmt.Close() Fatal.")
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
 		}
 	}()
 

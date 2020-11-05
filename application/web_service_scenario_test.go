@@ -62,7 +62,10 @@ func fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t 
 
 func TestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 	dbCreator := &test.DbCreator{}
-	db := dbCreator.Create(t)
+	db, ErrTestDbConnect := dbCreator.Create()
+	if ErrTestDbConnect != nil {
+		t.Fatal("Test DB Connect Error", ErrTestDbConnect)
+	}
 	fixtureTestWebServiceScenarioFetchAllFromMysqlSucceed(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}
@@ -93,7 +96,10 @@ func TestWebServiceScenarioFetchAllFromMysqlSucceed(t *testing.T) {
 
 func TestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t *testing.T) {
 	dbCreator := &test.DbCreator{}
-	db := dbCreator.Create(t)
+	db, ErrTestDbConnect := dbCreator.Create()
+	if ErrTestDbConnect != nil {
+		t.Fatal("Test DB Connect Error", ErrTestDbConnect)
+	}
 	fixtureTestWebServiceScenarioFetchAllFromMysqlFailureWebServicesNotFound(t, db)
 
 	repo := &repository.MysqlWebServiceRepository{Db: db}

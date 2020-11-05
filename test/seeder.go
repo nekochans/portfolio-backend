@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 
 	"github.com/go-sql-driver/mysql"
+	"golang.org/x/xerrors"
 )
 
 type Seeder struct {
@@ -38,7 +38,7 @@ func (s *Seeder) Execute() error {
 		if _, ErrLoadData := s.loadDataFromCsv(tx, table, csvFilePath); ErrLoadData != nil {
 			ErrRollback := tx.Rollback()
 			if ErrRollback != nil {
-				log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
+				return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
 			}
 			return ErrLoadData
 		}
@@ -57,7 +57,7 @@ func (s *Seeder) TruncateAllTable() error {
 	if ErrSetForeignKeyFalse != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
+			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
 		}
 		return ErrSetForeignKeyFalse
 	}
@@ -67,7 +67,7 @@ func (s *Seeder) TruncateAllTable() error {
 	if ErrTruncateMembers != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
+			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
 		}
 		return ErrTruncateMembers
 	}
@@ -76,7 +76,7 @@ func (s *Seeder) TruncateAllTable() error {
 	if ErrTruncateGitHubUsers != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
+			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
 		}
 		return ErrTruncateGitHubUsers
 	}
@@ -85,7 +85,7 @@ func (s *Seeder) TruncateAllTable() error {
 	if ErrTruncateWebServices != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
+			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
 		}
 		return ErrTruncateWebServices
 	}
@@ -94,7 +94,7 @@ func (s *Seeder) TruncateAllTable() error {
 	if ErrSetForeignKeyTrue != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			log.Fatal(ErrRollback, "Transaction.Rollback() Fatal.")
+			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
 		}
 		return ErrSetForeignKeyTrue
 	}
