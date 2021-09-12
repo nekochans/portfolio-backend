@@ -1,4 +1,4 @@
-FROM mysql:5.7
+FROM mysql:5.7.32
 
 LABEL maintainer="https://github.com/nekochans"
 
