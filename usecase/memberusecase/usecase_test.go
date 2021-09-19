@@ -2,6 +2,7 @@ package memberusecase
 
 import (
 	"database/sql"
+	"github.com/nekochans/portfolio-backend/domain"
 	"path/filepath"
 	"reflect"
 	"testing"
@@ -21,9 +22,11 @@ func TestMain(m *testing.M) {
 	_ = seeder.TruncateAllTable()
 
 	m.Run()
+
+	_ = seeder.TruncateAllTable()
 }
 
-func TestFetchFromMysqlHandler(t *testing.T) {
+func TestHandler(t *testing.T) {
 	t.Run("Success Fetch Member", func(t *testing.T) {
 		testDataDir, err := filepath.Abs("./testdata/fetchfrommysql/success")
 		if err != nil {
@@ -31,11 +34,17 @@ func TestFetchFromMysqlHandler(t *testing.T) {
 		}
 
 		seeder := &test.Seeder{Db: db, DirPath: testDataDir}
+		err = seeder.TruncateAllTable()
+		if err != nil {
+			t.Fatal("Failed seeder.TruncateAllTable()", err)
+		}
 
 		err = seeder.Execute()
 		if err != nil {
 			t.Fatal("Failed seeder.Execute()", err)
 		}
+
+		t.Cleanup(func() { _ = seeder.TruncateAllTable() })
 
 		expected := &Openapi.Member{
 			Id:             1,
@@ -60,12 +69,99 @@ func TestFetchFromMysqlHandler(t *testing.T) {
 	})
 
 	t.Run("Error Member Not Found", func(t *testing.T) {
+		seeder := &test.Seeder{Db: db}
+		err := seeder.TruncateAllTable()
+		if err != nil {
+			t.Fatal("Failed seeder.TruncateAllTable()", err)
+		}
+
+		t.Cleanup(func() { _ = seeder.TruncateAllTable() })
+
 		repo := &repository.MysqlMemberRepository{Db: db}
 		u := &UseCase{MemberRepository: repo}
 		req := &MemberFetchRequest{Id: 99}
 
 		res, err := u.FetchFromMysql(*req)
 		expected := "MysqlMemberRepository.Find: Member Not Found"
+
+		if res != nil {
+			t.Error("\nActually: ", res, "\nExpected: ", expected)
+		}
+
+		if err != nil {
+			if err.Error() != expected {
+				t.Error("\nActually: ", err.Error(), "\nExpected: ", expected)
+			}
+		}
+	})
+
+	t.Run("Success Fetch All Members", func(t *testing.T) {
+		testDataDir, err := filepath.Abs("./testdata/fetchallfrommysql/success")
+		if err != nil {
+			t.Fatal("Failed Read test data", err)
+		}
+
+		seeder := &test.Seeder{Db: db, DirPath: testDataDir}
+		err = seeder.TruncateAllTable()
+		if err != nil {
+			t.Fatal("Failed seeder.TruncateAllTable()", err)
+		}
+
+		err = seeder.Execute()
+		if err != nil {
+			t.Fatal("Failed seeder.Execute()", err)
+		}
+
+		t.Cleanup(func() { _ = seeder.TruncateAllTable() })
+
+		var expected domain.Members
+
+		expected = append(
+			expected,
+			&Openapi.Member{
+				Id:             10,
+				GithubUserName: "keita",
+				GithubPicture:  "https://aaa.png",
+				CvUrl:          "https://github.com/keita/cv",
+			},
+			&Openapi.Member{
+				Id:             20,
+				GithubUserName: "moko-cat",
+				GithubPicture:  "https://neko.jpeg",
+				CvUrl:          "https://github.com/moko-cat/resume",
+			},
+		)
+
+		repo := &repository.MysqlMemberRepository{Db: db}
+		u := &UseCase{MemberRepository: repo}
+
+		res, err := u.FetchAllFromMysql()
+
+		if err != nil {
+			t.Error("\nActually: ", err, "\nExpected: ", expected)
+		}
+
+		for i, member := range res.Items {
+			if reflect.DeepEqual(member, expected[i]) == false {
+				t.Error("\nActually: ", member, "\nExpected: ", expected[i])
+			}
+		}
+	})
+
+	t.Run("Error Members Not Found", func(t *testing.T) {
+		seeder := &test.Seeder{Db: db}
+		err := seeder.TruncateAllTable()
+		if err != nil {
+			t.Fatal("Failed seeder.TruncateAllTable()", err)
+		}
+
+		t.Cleanup(func() { _ = seeder.TruncateAllTable() })
+
+		repo := &repository.MysqlMemberRepository{Db: db}
+		u := &UseCase{MemberRepository: repo}
+
+		res, err := u.FetchAllFromMysql()
+		expected := "MysqlMemberRepository.FindAll: Members Not Found"
 
 		if res != nil {
 			t.Error("\nActually: ", res, "\nExpected: ", expected)
