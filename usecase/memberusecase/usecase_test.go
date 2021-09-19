@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 
 func TestFetchFromMysqlHandler(t *testing.T) {
 	t.Run("Success Fetch Member", func(t *testing.T) {
-		testDataDir, err := filepath.Abs("../../test/data/memberscenario/fetchfrommysql/succeed")
+		testDataDir, err := filepath.Abs("./testdata/fetchfrommysql/success")
 		if err != nil {
 			t.Fatal("Failed Read test data", err)
 		}
