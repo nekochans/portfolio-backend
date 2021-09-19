@@ -2,7 +2,6 @@ package memberusecase
 
 import (
 	"database/sql"
-	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
@@ -21,9 +20,7 @@ func TestMain(m *testing.M) {
 	seeder := &test.Seeder{Db: db}
 	_ = seeder.TruncateAllTable()
 
-	status := m.Run()
-
-	os.Exit(status)
+	m.Run()
 }
 
 func TestFetchFromMysqlHandler(t *testing.T) {
