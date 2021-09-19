@@ -2,11 +2,11 @@ package memberusecase
 
 import (
 	"database/sql"
-	"github.com/nekochans/portfolio-backend/domain"
 	"path/filepath"
 	"reflect"
 	"testing"
 
+	"github.com/nekochans/portfolio-backend/domain"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"github.com/nekochans/portfolio-backend/test"
@@ -14,6 +14,8 @@ import (
 
 var db *sql.DB
 
+// Go1.15 から TestMain には os.Exit() のコールが不要になったのでlintのルールを無効化
+//nolint:staticcheck
 func TestMain(m *testing.M) {
 	dbCreator := &test.DbCreator{}
 	db, _ = dbCreator.Create()
@@ -26,7 +28,7 @@ func TestMain(m *testing.M) {
 	_ = seeder.TruncateAllTable()
 }
 
-func TestHandler(t *testing.T) {
+func TestFetchFromMysqlHandler(t *testing.T) {
 	t.Run("Success Fetch Member", func(t *testing.T) {
 		testDataDir, err := filepath.Abs("./testdata/fetchfrommysql/success")
 		if err != nil {
@@ -34,10 +36,6 @@ func TestHandler(t *testing.T) {
 		}
 
 		seeder := &test.Seeder{Db: db, DirPath: testDataDir}
-		err = seeder.TruncateAllTable()
-		if err != nil {
-			t.Fatal("Failed seeder.TruncateAllTable()", err)
-		}
 
 		err = seeder.Execute()
 		if err != nil {
@@ -70,10 +68,6 @@ func TestHandler(t *testing.T) {
 
 	t.Run("Error Member Not Found", func(t *testing.T) {
 		seeder := &test.Seeder{Db: db}
-		err := seeder.TruncateAllTable()
-		if err != nil {
-			t.Fatal("Failed seeder.TruncateAllTable()", err)
-		}
 
 		t.Cleanup(func() { _ = seeder.TruncateAllTable() })
 
@@ -94,7 +88,10 @@ func TestHandler(t *testing.T) {
 			}
 		}
 	})
+}
 
+//nolint:funlen
+func TestFetchAllFromMysqlHandler(t *testing.T) {
 	t.Run("Success Fetch All Members", func(t *testing.T) {
 		testDataDir, err := filepath.Abs("./testdata/fetchallfrommysql/success")
 		if err != nil {
@@ -102,10 +99,6 @@ func TestHandler(t *testing.T) {
 		}
 
 		seeder := &test.Seeder{Db: db, DirPath: testDataDir}
-		err = seeder.TruncateAllTable()
-		if err != nil {
-			t.Fatal("Failed seeder.TruncateAllTable()", err)
-		}
 
 		err = seeder.Execute()
 		if err != nil {
@@ -150,10 +143,6 @@ func TestHandler(t *testing.T) {
 
 	t.Run("Error Members Not Found", func(t *testing.T) {
 		seeder := &test.Seeder{Db: db}
-		err := seeder.TruncateAllTable()
-		if err != nil {
-			t.Fatal("Failed seeder.TruncateAllTable()", err)
-		}
 
 		t.Cleanup(func() { _ = seeder.TruncateAllTable() })
 
