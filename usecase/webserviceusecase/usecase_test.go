@@ -28,6 +28,30 @@ func TestMain(m *testing.M) {
 	_ = seeder.TruncateAllTable()
 }
 
+func TestFetchAllHandler(t *testing.T) {
+	t.Run("Success Fetch All WebServices", func(t *testing.T) {
+		u := &UseCase{}
+		res := u.FetchAll()
+
+		var expected domain.WebServices
+
+		expected = append(
+			expected,
+			&Openapi.WebService{
+				Id:          1,
+				Url:         "https://www.mindexer.net",
+				Description: "This service makes Qiita stock convenient.",
+			},
+		)
+
+		for i, webService := range res.Items {
+			if reflect.DeepEqual(webService, expected[i]) == false {
+				t.Error("\nActually: ", webService, "\nExpected: ", expected[i])
+			}
+		}
+	})
+}
+
 func TestFetchAllFromMysqlHandler(t *testing.T) {
 	t.Run("Success Fetch All WebServices", func(t *testing.T) {
 		testDataDir, err := filepath.Abs("./testdata/fetchallfrommysql/success")
