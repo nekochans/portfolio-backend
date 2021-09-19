@@ -110,9 +110,7 @@ func TestFetchAllHandler(t *testing.T) {
 			},
 		)
 
-		repo := &repository.MysqlMemberRepository{Db: db}
-		u := &UseCase{MemberRepository: repo}
-
+		u := &UseCase{}
 		res := u.FetchAll()
 
 		for i, member := range res.Items {
