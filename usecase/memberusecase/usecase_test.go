@@ -58,4 +58,23 @@ func TestFetchFromMysqlHandler(t *testing.T) {
 			t.Error("\nActually: ", res, "\nExpected: ", expected)
 		}
 	})
+
+	t.Run("Error Member Not Found", func(t *testing.T) {
+		repo := &repository.MysqlMemberRepository{Db: db}
+		u := &UseCase{MemberRepository: repo}
+		req := &MemberFetchRequest{Id: 99}
+
+		res, err := u.FetchFromMysql(*req)
+		expected := "MysqlMemberRepository.Find: Member Not Found"
+
+		if res != nil {
+			t.Error("\nActually: ", res, "\nExpected: ", expected)
+		}
+
+		if err != nil {
+			if err.Error() != expected {
+				t.Error("\nActually: ", err.Error(), "\nExpected: ", expected)
+			}
+		}
+	})
 }
