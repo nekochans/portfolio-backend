@@ -37,13 +37,3 @@ jobs:
           docker-compose exec -T ${DB_HOST} service mysql status
           docker-compose exec -T go make migrate-up
           docker-compose exec -T go make test-ci
-      - name: Convert coverage to lcov
-        uses: jandelgado/gcov2lcov-action@v1.0.0
-        with:
-          infile: coverage.out
-          outfile: coverage.lcov
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.lcov
