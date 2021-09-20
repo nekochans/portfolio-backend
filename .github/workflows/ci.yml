@@ -32,9 +32,8 @@ jobs:
         run: |
           cp .air.normal.conf .air.conf
           docker-compose up --build -d
-      - name: Execute test
+      - name: Execute CI
         run: |
-          docker-compose exec -T go make lint
           docker-compose exec -T ${DB_HOST} service mysql status
           docker-compose exec -T go make migrate-up
           docker-compose exec -T go make ci
