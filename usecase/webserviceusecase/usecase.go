@@ -1,11 +1,11 @@
-package application
+package webserviceusecase
 
 import (
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 )
 
-type WebServiceScenario struct {
+type UseCase struct {
 	WebServiceRepository domain.WebServiceRepository
 }
 
@@ -13,7 +13,7 @@ type WebServiceFetchAllResponse struct {
 	Items domain.WebServices `json:"items"`
 }
 
-func (w *WebServiceScenario) FetchAll() *WebServiceFetchAllResponse {
+func (u *UseCase) FetchAll() *WebServiceFetchAllResponse {
 	var item domain.WebServices
 
 	item = append(
@@ -21,15 +21,15 @@ func (w *WebServiceScenario) FetchAll() *WebServiceFetchAllResponse {
 		&Openapi.WebService{
 			Id:          1,
 			Url:         "https://www.mindexer.net",
-			Description: "Qiitaのストックを便利にするサービスです。",
+			Description: "This service makes Qiita stock convenient.",
 		},
 	)
 
 	return &WebServiceFetchAllResponse{Items: item}
 }
 
-func (w *WebServiceScenario) FetchAllFromMysql() (*WebServiceFetchAllResponse, error) {
-	res, err := w.WebServiceRepository.FindAll()
+func (u *UseCase) FetchAllFromMysql() (*WebServiceFetchAllResponse, error) {
+	res, err := u.WebServiceRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}

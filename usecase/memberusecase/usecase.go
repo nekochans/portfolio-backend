@@ -1,11 +1,11 @@
-package application
+package memberusecase
 
 import (
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 )
 
-type MemberScenario struct {
+type UseCase struct {
 	MemberRepository domain.MemberRepository
 }
 
@@ -13,8 +13,8 @@ type MemberFetchRequest struct {
 	Id int
 }
 
-func (m *MemberScenario) FetchFromMysql(req MemberFetchRequest) (*Openapi.Member, error) {
-	res, err := m.MemberRepository.Find(req.Id)
+func (u *UseCase) FetchFromMysql(req MemberFetchRequest) (*Openapi.Member, error) {
+	res, err := u.MemberRepository.Find(req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ type MemberFetchAllResponse struct {
 	Items domain.Members `json:"items"`
 }
 
-func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
+func (u *UseCase) FetchAll() *MemberFetchAllResponse {
 	var item domain.Members
 
 	const keitaMemberId = 1
@@ -55,8 +55,8 @@ func (m *MemberScenario) FetchAll() *MemberFetchAllResponse {
 	return &MemberFetchAllResponse{Items: item}
 }
 
-func (m *MemberScenario) FetchAllFromMysql() (*MemberFetchAllResponse, error) {
-	res, err := m.MemberRepository.FindAll()
+func (u *UseCase) FetchAllFromMysql() (*MemberFetchAllResponse, error) {
+	res, err := u.MemberRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
