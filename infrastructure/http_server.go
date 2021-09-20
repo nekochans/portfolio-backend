@@ -10,10 +10,11 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/nekochans/portfolio-backend/application"
 	"github.com/nekochans/portfolio-backend/config"
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
+	"github.com/nekochans/portfolio-backend/usecase/memberusecase"
+	"github.com/nekochans/portfolio-backend/usecase/webserviceusecase"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 )
@@ -28,8 +29,8 @@ type HttpServer struct {
 func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
 
-	scenario := application.MemberScenario{MemberRepository: repo}
-	members, ErrFetchAll := scenario.FetchAllFromMysql()
+	u := memberusecase.UseCase{MemberRepository: repo}
+	members, ErrFetchAll := u.FetchAllFromMysql()
 
 	if ErrFetchAll != nil {
 		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
@@ -50,10 +51,10 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 
 func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
 	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
-	scenario := application.MemberScenario{MemberRepository: repo}
+	u := memberusecase.UseCase{MemberRepository: repo}
 
-	req := &application.MemberFetchRequest{Id: id}
-	member, ErrFetch := scenario.FetchFromMysql(*req)
+	req := &memberusecase.MemberFetchRequest{Id: id}
+	member, ErrFetch := u.FetchFromMysql(*req)
 	if ErrFetch != nil {
 		ErrCreateError := CreateErrorResponse(w, r, ErrFetch)
 		if ErrCreateError != nil {
@@ -73,9 +74,9 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MysqlWebServiceRepository{Db: s.Db, Logger: s.Logger}
 
-	scenario := &application.WebServiceScenario{WebServiceRepository: repo}
+	u := webserviceusecase.UseCase{WebServiceRepository: repo}
 
-	res, ErrFetchAll := scenario.FetchAllFromMysql()
+	res, ErrFetchAll := u.FetchAllFromMysql()
 	if ErrFetchAll != nil {
 		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
 		if ErrCreateError != nil {
