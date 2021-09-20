@@ -5,8 +5,8 @@ import (
 
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"golang.org/x/xerrors"
 )
 
 type MysqlWebServiceRepository struct {
@@ -35,8 +35,7 @@ func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 
 	stmt, ErrPrepare := r.Db.Prepare(query)
 	if ErrPrepare != nil {
-		ErrBackend := &domain.BackendError{Message: "Db.Prepare Error", Err: ErrPrepare}
-		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
+		return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, ErrPrepare.Error())
 	}
 
 	defer func() {
@@ -49,8 +48,7 @@ func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 	rows, ErrQuery := stmt.Query()
 
 	if ErrQuery != nil {
-		ErrBackend := &domain.BackendError{Message: "stmt.Query Error", Err: ErrQuery}
-		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
+		return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, ErrQuery.Error())
 	}
 
 	var tableData WebServiceFindAllTableData
@@ -67,15 +65,13 @@ func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		)
 
 		if ErrRowsScan != nil {
-			ErrBackend := &domain.BackendError{Message: "rows.Scan Error", Err: ErrRowsScan}
-			return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
+			return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, ErrRowsScan.Error())
 		}
 	}
 
 	// この条件の時はデータが1件も存在しない
 	if tableData.Id == 0 {
-		ErrBackend := &domain.BackendError{Message: "WebServices Not Found"}
-		return nil, xerrors.Errorf("MysqlWebServiceRepository.FindAll: %w", ErrBackend)
+		return nil, errors.Wrap(domain.ErrWebServiceNotFound, "record not found in webservices")
 	}
 
 	return webServices, nil
