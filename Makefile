@@ -1,4 +1,4 @@
-.PHONY: migrate-up migrate-down lint format test test-ci
+.PHONY: migrate-up migrate-down lint format test ci
 
 migrate-up:
 	@migrate -source file://./_sql -database 'mysql://$(DB_USER):$(DB_PASSWORD)@tcp($(DB_HOST):3306)/$(DB_NAME)' up
@@ -15,5 +15,7 @@ format:
 test:
 	@go clean -testcache
 	@go test -p 1 -v ./...
-test-ci:
-	@go test -p 1 -v -coverprofile coverage.out -covermode atomic ./...
+ci: lint
+	@go mod tidy && git diff -s --exit-code go.sum
+	@go clean -testcache
+	@go test -p 1 -v -coverprofile=covprofile.out -covermode atomic ./...
