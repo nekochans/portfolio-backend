@@ -1,10 +1,11 @@
-name: ci-master
+name: ci
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   DB_USER: ${{ secrets.DB_USER }}
@@ -31,9 +32,19 @@ jobs:
         run: |
           cp .air.normal.conf .air.conf
           docker-compose up --build -d
-      - name: Execute test
+      - name: Execute CI
         run: |
-          docker-compose exec -T go make lint
+          sleep 10
           docker-compose exec -T ${DB_HOST} service mysql status
           docker-compose exec -T go make migrate-up
-          docker-compose exec -T go make test-ci
+          docker-compose exec -T go make ci
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
+      - name: Install goveralls
+        run: go install github.com/mattn/goveralls@latest
+#      - name: Send coverage
+#        env:
+#          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: goveralls -coverprofile=covprofile.out -service=github
