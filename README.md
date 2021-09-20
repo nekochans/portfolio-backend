@@ -1,5 +1,5 @@
 # portfolio-backend
-![ci-master](https://github.com/nekochans/portfolio-backend/workflows/ci-master/badge.svg)
+[![ci](https://github.com/nekochans/portfolio-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/nekochans/portfolio-backend/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/nekochans/portfolio-backend/badge.svg?branch=master)](https://coveralls.io/github/nekochans/portfolio-backend?branch=master)
 
 GitHub Organization 「nekochans」の説明用Webサイトのバックエンド
