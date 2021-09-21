@@ -3,7 +3,7 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/go-sql-driver/mysql"
@@ -16,7 +16,7 @@ type Seeder struct {
 }
 
 func (s *Seeder) Execute() error {
-	files, ErrReadDir := ioutil.ReadDir(s.DirPath)
+	files, ErrReadDir := os.ReadDir(s.DirPath)
 	if ErrReadDir != nil {
 		return errors.Wrap(ErrReadDir, "failed to read dir")
 	}
