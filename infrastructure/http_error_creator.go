@@ -1,31 +1,36 @@
 package infrastructure
 
-import Openapi "github.com/nekochans/portfolio-backend/openapi"
+import (
+	"github.com/nekochans/portfolio-backend/domain"
+	Openapi "github.com/nekochans/portfolio-backend/openapi"
+	"github.com/pkg/errors"
+)
 
 type HttpErrorCreator struct{}
 
-func (h *HttpErrorCreator) CreateFromMsg(msg string) Openapi.Error {
+func (c *HttpErrorCreator) CreateFromError(err error) Openapi.Error {
 	const notFoundErrorCode = 404
 	const internalServerErrorCode = 500
 
-	code := internalServerErrorCode
-	message := "Internal Server Error"
+	var code int
+	var message string
 
-	m := map[string]int{
-		"MysqlMemberRepository.Find: Member Not Found":             notFoundErrorCode,
-		"MysqlMemberRepository.FindAll: Members Not Found":         notFoundErrorCode,
-		"MysqlWebServiceRepository.FindAll: WebServices Not Found": notFoundErrorCode,
+	switch errors.Cause(err) {
+	case domain.ErrMemberNotFound:
+		code = notFoundErrorCode
+		message = "Member Not Found"
+	case domain.ErrWebServiceNotFound:
+		code = notFoundErrorCode
+		message = "WebService Not Found"
+	default:
+		code = internalServerErrorCode
+		message = "Internal Server Error"
 	}
 
-	if m[msg] != 0 {
-		code = m[msg]
-		message = msg
-	}
-
-	err := Openapi.Error{
+	resErr := Openapi.Error{
 		Code:    code,
 		Message: message,
 	}
 
-	return err
+	return resErr
 }
