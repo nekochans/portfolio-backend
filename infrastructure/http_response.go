@@ -32,9 +32,13 @@ func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payl
 
 func CreateErrorResponse(w http.ResponseWriter, r *http.Request, err error) error {
 	logger := CreateLogger()
-	logger.Error(err.Error(), zap.String("RequestId", middleware.GetReqID(r.Context())))
+	logger.Error(
+		err.Error(),
+		zap.String("RequestId", middleware.GetReqID(r.Context())),
+		zap.Error(err),
+	)
 
 	errCreator := &HttpErrorCreator{}
-	httpError := errCreator.CreateFromMsg(err.Error())
+	httpError := errCreator.CreateFromError(err)
 	return CreateJsonResponse(w, r, httpError.Code, httpError)
 }
