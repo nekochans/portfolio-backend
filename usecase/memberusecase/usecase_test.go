@@ -10,6 +10,7 @@ import (
 	"github.com/nekochans/portfolio-backend/infrastructure/repository"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"github.com/nekochans/portfolio-backend/test"
+	"github.com/pkg/errors"
 )
 
 var db *sql.DB
@@ -76,15 +77,17 @@ func TestFetchFromMysqlHandler(t *testing.T) {
 		req := &MemberFetchRequest{Id: 99}
 
 		res, err := u.FetchFromMysql(*req)
-		expected := "MysqlMemberRepository.Find: Member Not Found"
+		expected := domain.ErrMemberNotFound
 
 		if res != nil {
 			t.Error("\nActually: ", res, "\nExpected: ", expected)
 		}
 
+		resErr := errors.Cause(err)
+
 		if err != nil {
-			if err.Error() != expected {
-				t.Error("\nActually: ", err.Error(), "\nExpected: ", expected)
+			if resErr != expected {
+				t.Error("\nActually: ", resErr, "\nExpected: ", expected)
 			}
 		}
 	})
@@ -181,15 +184,17 @@ func TestFetchAllFromMysqlHandler(t *testing.T) {
 		u := &UseCase{MemberRepository: repo}
 
 		res, err := u.FetchAllFromMysql()
-		expected := "MysqlMemberRepository.FindAll: Members Not Found"
+		expected := domain.ErrMemberNotFound
 
 		if res != nil {
 			t.Error("\nActually: ", res, "\nExpected: ", expected)
 		}
 
+		resErr := errors.Cause(err)
+
 		if err != nil {
-			if err.Error() != expected {
-				t.Error("\nActually: ", err.Error(), "\nExpected: ", expected)
+			if resErr != expected {
+				t.Error("\nActually: ", resErr, "\nExpected: ", expected)
 			}
 		}
 	})

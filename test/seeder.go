@@ -3,11 +3,11 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/go-sql-driver/mysql"
-	"golang.org/x/xerrors"
+	"github.com/pkg/errors"
 )
 
 type Seeder struct {
@@ -16,14 +16,14 @@ type Seeder struct {
 }
 
 func (s *Seeder) Execute() error {
-	files, ErrReadDir := ioutil.ReadDir(s.DirPath)
+	files, ErrReadDir := os.ReadDir(s.DirPath)
 	if ErrReadDir != nil {
-		return ErrReadDir
+		return errors.Wrap(ErrReadDir, "failed to read dir")
 	}
 
 	tx, ErrTransactionBegin := s.Db.Begin()
 	if ErrTransactionBegin != nil {
-		return ErrTransactionBegin
+		return errors.Wrap(ErrTransactionBegin, "failed to begin transaction")
 	}
 
 	for _, file := range files {
@@ -38,9 +38,9 @@ func (s *Seeder) Execute() error {
 		if _, ErrLoadData := s.loadDataFromCsv(tx, table, csvFilePath); ErrLoadData != nil {
 			ErrRollback := tx.Rollback()
 			if ErrRollback != nil {
-				return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
+				return errors.Wrap(ErrRollback, "failed to Transaction.Rollback()")
 			}
-			return ErrLoadData
+			return errors.Wrap(ErrLoadData, "failed to loadDataFromCsv")
 		}
 	}
 
@@ -50,16 +50,16 @@ func (s *Seeder) Execute() error {
 func (s *Seeder) TruncateAllTable() error {
 	tx, ErrTransactionBegin := s.Db.Begin()
 	if ErrTransactionBegin != nil {
-		return ErrTransactionBegin
+		return errors.Wrap(ErrTransactionBegin, "failed to s.Db.Begin()")
 	}
 
 	_, ErrSetForeignKeyFalse := tx.Exec("SET FOREIGN_KEY_CHECKS=0")
 	if ErrSetForeignKeyFalse != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
+			return errors.Wrap(ErrRollback, "failed to Transaction.Rollback()")
 		}
-		return ErrSetForeignKeyFalse
+		return errors.Wrap(ErrSetForeignKeyFalse, "failed to exec sql")
 	}
 
 	// TODO テーブル分ループさせるように改修を行う
@@ -67,36 +67,36 @@ func (s *Seeder) TruncateAllTable() error {
 	if ErrTruncateMembers != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
+			return errors.Wrap(ErrRollback, "failed to Transaction.Rollback()")
 		}
-		return ErrTruncateMembers
+		return errors.Wrap(ErrTruncateMembers, "failed to exec sql")
 	}
 
 	_, ErrTruncateGitHubUsers := tx.Exec("TRUNCATE members_github_users")
 	if ErrTruncateGitHubUsers != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
+			return errors.Wrap(ErrRollback, "failed to Transaction.Rollback()")
 		}
-		return ErrTruncateGitHubUsers
+		return errors.Wrap(ErrTruncateGitHubUsers, "failed to exec sql")
 	}
 
 	_, ErrTruncateWebServices := tx.Exec("TRUNCATE webservices")
 	if ErrTruncateWebServices != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
+			return errors.Wrap(ErrRollback, "failed to Transaction.Rollback()")
 		}
-		return ErrTruncateWebServices
+		return errors.Wrap(ErrTruncateWebServices, "failed to exec sql")
 	}
 
 	_, ErrSetForeignKeyTrue := tx.Exec("SET FOREIGN_KEY_CHECKS=1")
 	if ErrSetForeignKeyTrue != nil {
 		ErrRollback := tx.Rollback()
 		if ErrRollback != nil {
-			return xerrors.Errorf("Transaction.Rollback() Fatal: %w", ErrRollback)
+			return errors.Wrap(ErrRollback, "failed to Transaction.Rollback()")
 		}
-		return ErrSetForeignKeyTrue
+		return errors.Wrap(ErrSetForeignKeyTrue, "failed to exec sql")
 	}
 
 	return tx.Commit()

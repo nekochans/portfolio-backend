@@ -54,7 +54,7 @@ func CreateLogger() *zap.Logger {
 		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stderr"},
 	}
-	logger, _ := zapConfig.Build()
+	logger, _ := zapConfig.Build(zap.AddCallerSkip(1))
 
 	return logger
 }

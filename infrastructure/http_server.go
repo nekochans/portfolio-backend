@@ -15,8 +15,8 @@ import (
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
 	"github.com/nekochans/portfolio-backend/usecase/memberusecase"
 	"github.com/nekochans/portfolio-backend/usecase/webserviceusecase"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"golang.org/x/xerrors"
 )
 
 type HttpServer struct {
@@ -35,8 +35,8 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	if ErrFetchAll != nil {
 		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
 		if ErrCreateError != nil {
-			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
-			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
+			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
 		}
 
 		return
@@ -44,8 +44,8 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 
 	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, members)
 	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
-		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
+		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
 	}
 }
 
@@ -58,16 +58,16 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 	if ErrFetch != nil {
 		ErrCreateError := CreateErrorResponse(w, r, ErrFetch)
 		if ErrCreateError != nil {
-			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
-			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
+			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
 		}
 		return
 	}
 
 	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, member)
 	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
-		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
+		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
 	}
 }
 
@@ -80,16 +80,16 @@ func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 	if ErrFetchAll != nil {
 		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
 		if ErrCreateError != nil {
-			ErrCreateErrorResponse := xerrors.Errorf("Failed to create error response: %w", ErrCreateError)
-			s.Logger.Error(ErrCreateError.Error(), zap.Error(ErrCreateErrorResponse))
+			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
+			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
 		}
 		return
 	}
 
 	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, res)
 	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := xerrors.Errorf("Failed to create json response: %w", ErrCreateJson)
-		s.Logger.Error(ErrCreateJson.Error(), zap.Error(ErrCreateJsonResponse))
+		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
+		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
 	}
 }
 
@@ -132,15 +132,15 @@ func StartHttpServer() {
 	defer func() {
 		ErrSync := logger.Sync()
 		if ErrSync != nil {
-			ErrLoggerSync := xerrors.Errorf("Failed to logger Sync: %w", ErrSync)
-			logger.Error(ErrSync.Error(), zap.Error(ErrLoggerSync))
+			ErrLoggerSync := errors.Wrap(ErrSync, "failed to logger sync")
+			logger.Error(ErrLoggerSync.Error(), zap.Error(ErrLoggerSync))
 		}
 	}()
 
 	db, ErrConnectDb := sql.Open("mysql", config.GetDsn())
 	if ErrConnectDb != nil {
-		ErrMysqlConnect := xerrors.Errorf("Unable to connect to MySQL server: %w", ErrConnectDb)
-		logger.Error(ErrConnectDb.Error(), zap.Error(ErrMysqlConnect))
+		ErrMysqlConnect := errors.Wrap(ErrConnectDb, "unable to connect to mysql server")
+		logger.Error(ErrMysqlConnect.Error(), zap.Error(ErrMysqlConnect))
 	}
 
 	router := chi.NewRouter()
