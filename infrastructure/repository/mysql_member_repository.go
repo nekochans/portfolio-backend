@@ -52,7 +52,12 @@ func (r *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 	}()
 
 	var tableData FindTableData
-	if err := stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName); err != nil {
+	if err := stmt.QueryRow(id).Scan(
+		&tableData.Id,
+		&tableData.GithubId,
+		&tableData.AvatarUrl,
+		&tableData.CvRepoName,
+	); err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			return nil, errors.Wrap(domain.ErrMemberNotFound, err.Error())
 		}
@@ -60,7 +65,7 @@ func (r *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, err.Error())
 	}
 
-		member := &Openapi.Member{
+	member := &Openapi.Member{
 		Id:             tableData.Id,
 		GithubUserName: tableData.GithubId,
 		GithubPicture:  tableData.AvatarUrl,
