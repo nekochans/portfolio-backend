@@ -39,32 +39,28 @@ func (r *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 			m.id = ?
 	`
 
-	stmt, ErrPrepare := r.Db.Prepare(query)
+	stmt, err := r.Db.Prepare(query)
 
-	if ErrPrepare != nil {
-		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, ErrPrepare.Error())
+	if err != nil {
+		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, err.Error())
 	}
 
 	defer func() {
-		ErrStmtClose := stmt.Close()
-		if ErrStmtClose != nil {
-			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
+		if err := stmt.Close(); err != nil {
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(err))
 		}
 	}()
 
 	var tableData FindTableData
-
-	ErrQuery := stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
-	if ErrQuery != nil {
-		// この条件の時はデータが1件も存在しない
-		if ErrQuery.Error() == "sql: no rows in result set" {
-			return nil, errors.Wrap(domain.ErrMemberNotFound, ErrQuery.Error())
+	if err := stmt.QueryRow(id).Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName); err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return nil, errors.Wrap(domain.ErrMemberNotFound, err.Error())
 		}
 
-		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, ErrQuery.Error())
+		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, err.Error())
 	}
 
-	member := &Openapi.Member{
+		member := &Openapi.Member{
 		Id:             tableData.Id,
 		GithubUserName: tableData.GithubId,
 		GithubPicture:  tableData.AvatarUrl,
@@ -99,28 +95,29 @@ func (r *MysqlMemberRepository) FindAll() (domain.Members, error) {
 		ASC
 	`
 
-	stmt, ErrPrepare := r.Db.Prepare(query)
-	if ErrPrepare != nil {
-		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, ErrPrepare.Error())
+	stmt, err := r.Db.Prepare(query)
+	if err != nil {
+		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, err.Error())
 	}
 
 	defer func() {
-		ErrStmtClose := stmt.Close()
-		if ErrStmtClose != nil {
-			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
+		if err := stmt.Close(); err != nil {
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(err))
 		}
 	}()
 
-	rows, ErrQuery := stmt.Query()
-
-	if ErrQuery != nil {
-		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, ErrQuery.Error())
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, err.Error())
 	}
 
 	var tableData FindAllTableData
 	var members domain.Members
 	for rows.Next() {
-		ErrRowsScan := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName)
+		if err := rows.Scan(&tableData.Id, &tableData.GithubId, &tableData.AvatarUrl, &tableData.CvRepoName); err != nil {
+			return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, err.Error())
+		}
+
 		members = append(
 			members,
 			&Openapi.Member{
@@ -130,10 +127,6 @@ func (r *MysqlMemberRepository) FindAll() (domain.Members, error) {
 				CvUrl:          "https://github.com/" + tableData.GithubId + "/" + tableData.CvRepoName,
 			},
 		)
-
-		if ErrRowsScan != nil {
-			return nil, errors.Wrap(domain.ErrMemberRepositoryUnexpected, ErrRowsScan.Error())
-		}
 	}
 
 	// この条件の時はデータが1件も存在しない

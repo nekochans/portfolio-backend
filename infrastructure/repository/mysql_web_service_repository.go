@@ -33,28 +33,29 @@ func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 		ASC
 	`
 
-	stmt, ErrPrepare := r.Db.Prepare(query)
-	if ErrPrepare != nil {
-		return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, ErrPrepare.Error())
+	stmt, err := r.Db.Prepare(query)
+	if err != nil {
+		return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, err.Error())
 	}
 
 	defer func() {
-		ErrStmtClose := stmt.Close()
-		if ErrStmtClose != nil {
-			r.Logger.Error("stmt.Close() Fatal.", zap.Error(ErrStmtClose))
+		if err := stmt.Close(); err != nil {
+			r.Logger.Error("stmt.Close() Fatal.", zap.Error(err))
 		}
 	}()
 
-	rows, ErrQuery := stmt.Query()
-
-	if ErrQuery != nil {
-		return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, ErrQuery.Error())
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, err.Error())
 	}
 
 	var tableData WebServiceFindAllTableData
 	var webServices domain.WebServices
 	for rows.Next() {
-		ErrRowsScan := rows.Scan(&tableData.Id, &tableData.Url, &tableData.Description)
+		if err := rows.Scan(&tableData.Id, &tableData.Url, &tableData.Description); err != nil {
+			return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, err.Error())
+		}
+
 		webServices = append(
 			webServices,
 			&Openapi.WebService{
@@ -63,10 +64,6 @@ func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 				Description: tableData.Description,
 			},
 		)
-
-		if ErrRowsScan != nil {
-			return nil, errors.Wrap(domain.ErrWebServiceRepositoryUnexpected, ErrRowsScan.Error())
-		}
 	}
 
 	// この条件の時はデータが1件も存在しない
