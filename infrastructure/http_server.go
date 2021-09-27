@@ -30,22 +30,28 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
 
 	u := memberusecase.UseCase{MemberRepository: repo}
-	members, ErrFetchAll := u.FetchAllFromMysql()
+	members, err := u.FetchAllFromMysql()
 
-	if ErrFetchAll != nil {
-		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
-		if ErrCreateError != nil {
-			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
-			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
+	if err != nil {
+		if err := CreateErrorResponse(w, r, err); err != nil {
+			s.Logger.Error(
+				err.Error(),
+				zap.Error(
+					errors.Wrap(err, "failed to create error response"),
+				),
+			)
 		}
 
 		return
 	}
 
-	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, members)
-	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
-		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
+	if err := CreateJsonResponse(w, r, http.StatusOK, members); err != nil {
+		s.Logger.Error(
+			err.Error(),
+			zap.Error(
+				errors.Wrap(err, "failed to create json response"),
+			),
+		)
 	}
 }
 
