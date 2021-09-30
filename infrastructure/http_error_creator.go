@@ -1,8 +1,9 @@
 package infrastructure
 
 import (
-	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
+	"github.com/nekochans/portfolio-backend/usecase/memberusecase"
+	"github.com/nekochans/portfolio-backend/usecase/webserviceusecase"
 	"github.com/pkg/errors"
 )
 
@@ -16,10 +17,10 @@ func (c *HttpErrorCreator) CreateFromError(err error) Openapi.Error {
 	var message string
 
 	switch errors.Cause(err) {
-	case domain.ErrMemberNotFound:
+	case memberusecase.ErrNotFound:
 		code = notFoundErrorCode
 		message = "Member Not Found"
-	case domain.ErrWebServiceNotFound:
+	case webserviceusecase.ErrNotFound:
 		code = notFoundErrorCode
 		message = "WebService Not Found"
 	default:

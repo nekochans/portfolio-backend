@@ -30,22 +30,28 @@ func (s *HttpServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	repo := &repository.MysqlMemberRepository{Db: s.Db, Logger: s.Logger}
 
 	u := memberusecase.UseCase{MemberRepository: repo}
-	members, ErrFetchAll := u.FetchAllFromMysql()
+	members, err := u.FetchAllFromMysql()
 
-	if ErrFetchAll != nil {
-		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
-		if ErrCreateError != nil {
-			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
-			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
+	if err != nil {
+		if err := CreateErrorResponse(w, r, err); err != nil {
+			s.Logger.Error(
+				err.Error(),
+				zap.Error(
+					errors.Wrap(err, "failed to create error response"),
+				),
+			)
 		}
 
 		return
 	}
 
-	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, members)
-	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
-		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
+	if err := CreateJsonResponse(w, r, http.StatusOK, members); err != nil {
+		s.Logger.Error(
+			err.Error(),
+			zap.Error(
+				errors.Wrap(err, "failed to create json response"),
+			),
+		)
 	}
 }
 
@@ -54,20 +60,27 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 	u := memberusecase.UseCase{MemberRepository: repo}
 
 	req := &memberusecase.MemberFetchRequest{Id: id}
-	member, ErrFetch := u.FetchFromMysql(*req)
-	if ErrFetch != nil {
-		ErrCreateError := CreateErrorResponse(w, r, ErrFetch)
-		if ErrCreateError != nil {
-			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
-			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
+	member, err := u.FetchFromMysql(*req)
+	if err != nil {
+		if err := CreateErrorResponse(w, r, err); err != nil {
+			s.Logger.Error(
+				err.Error(),
+				zap.Error(
+					errors.Wrap(err, "failed to create error response"),
+				),
+			)
 		}
+
 		return
 	}
 
-	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, member)
-	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
-		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
+	if err := CreateJsonResponse(w, r, http.StatusOK, member); err != nil {
+		s.Logger.Error(
+			err.Error(),
+			zap.Error(
+				errors.Wrap(err, "failed to create json response"),
+			),
+		)
 	}
 }
 
@@ -76,20 +89,27 @@ func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 
 	u := webserviceusecase.UseCase{WebServiceRepository: repo}
 
-	res, ErrFetchAll := u.FetchAllFromMysql()
-	if ErrFetchAll != nil {
-		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
-		if ErrCreateError != nil {
-			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
-			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
+	res, err := u.FetchAllFromMysql()
+	if err != nil {
+		if err := CreateErrorResponse(w, r, err); err != nil {
+			s.Logger.Error(
+				err.Error(),
+				zap.Error(
+					errors.Wrap(err, "failed to create error response"),
+				),
+			)
 		}
+
 		return
 	}
 
-	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, res)
-	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
-		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
+	if err := CreateJsonResponse(w, r, http.StatusOK, res); err != nil {
+		s.Logger.Error(
+			err.Error(),
+			zap.Error(
+				errors.Wrap(err, "failed to create json response"),
+			),
+		)
 	}
 }
 
@@ -130,17 +150,24 @@ func StartHttpServer() {
 
 	logger := CreateLogger()
 	defer func() {
-		ErrSync := logger.Sync()
-		if ErrSync != nil {
-			ErrLoggerSync := errors.Wrap(ErrSync, "failed to logger sync")
-			logger.Error(ErrLoggerSync.Error(), zap.Error(ErrLoggerSync))
+		if err := logger.Sync(); err != nil {
+			logger.Error(
+				err.Error(),
+				zap.Error(
+					errors.Wrap(err, "failed to logger sync"),
+				),
+			)
 		}
 	}()
 
-	db, ErrConnectDb := sql.Open("mysql", config.GetDsn())
-	if ErrConnectDb != nil {
-		ErrMysqlConnect := errors.Wrap(ErrConnectDb, "unable to connect to mysql server")
-		logger.Error(ErrMysqlConnect.Error(), zap.Error(ErrMysqlConnect))
+	db, err := sql.Open("mysql", config.GetDsn())
+	if err != nil {
+		logger.Error(
+			err.Error(),
+			zap.Error(
+				errors.Wrap(err, "unable to connect to mysql server"),
+			),
+		)
 	}
 
 	router := chi.NewRouter()
@@ -150,5 +177,12 @@ func StartHttpServer() {
 	server.HttpHandler = Openapi.HandlerFromMux(server, server.Router)
 
 	log.Println("Starting app")
-	_ = http.ListenAndServe(fmt.Sprint(":", *port), server.Router)
+	if err := http.ListenAndServe(fmt.Sprint(":", *port), server.Router); err != nil {
+		logger.Error(
+			err.Error(),
+			zap.Error(
+				errors.Wrap(err, "unable to http listen and serve"),
+			),
+		)
+	}
 }

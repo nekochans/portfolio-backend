@@ -3,6 +3,12 @@ package webserviceusecase
 import (
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
+	"github.com/pkg/errors"
+)
+
+var (
+	ErrNotFound   = errors.New("WebServiceUseCase web service not found")
+	ErrUnexpected = errors.New("WebServiceUseCase unexpected error")
 )
 
 type UseCase struct {
@@ -31,7 +37,12 @@ func (u *UseCase) FetchAll() *WebServiceFetchAllResponse {
 func (u *UseCase) FetchAllFromMysql() (*WebServiceFetchAllResponse, error) {
 	res, err := u.WebServiceRepository.FindAll()
 	if err != nil {
-		return nil, err
+		switch errors.Cause(err) {
+		case domain.ErrWebServiceNotFound:
+			return nil, errors.Wrap(ErrNotFound, err.Error())
+		default:
+			return nil, errors.Wrap(ErrUnexpected, err.Error())
+		}
 	}
 
 	return &WebServiceFetchAllResponse{Items: res}, nil

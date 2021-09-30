@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	ErrMemberNotFound             = errors.New("member not found")
-	ErrMemberRepositoryUnexpected = errors.New("member repository unexpected error")
+	ErrMemberNotFound             = errors.New("MemberRepository member not found")
+	ErrMemberRepositoryUnexpected = errors.New("MemberRepository unexpected error")
 )
 
 type MemberRepository interface {

@@ -5,26 +5,25 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/middleware"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
+var ErrResponsePayloadJsonEncode = errors.New("failed to json encode of the response payload")
+var ErrWriteResponse = errors.New("failed to write response payload")
+
 func CreateJsonResponse(w http.ResponseWriter, r *http.Request, status int, payload interface{}) error {
-	res, ErrJsonEncode := json.Marshal(payload)
-	if ErrJsonEncode != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, ErrWriteResponse := w.Write([]byte(ErrJsonEncode.Error()))
-		if ErrWriteResponse != nil {
-			return ErrWriteResponse
-		}
-		return ErrJsonEncode
+	res, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(ErrResponsePayloadJsonEncode, err.Error())
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("X-Request-Id", middleware.GetReqID(r.Context()))
 	w.WriteHeader(status)
-	_, ErrWriteHeader := w.Write(res)
-	if ErrWriteHeader != nil {
-		return ErrWriteHeader
+	if _, err := w.Write(res); err != nil {
+		return errors.Wrap(ErrWriteResponse, err.Error())
 	}
 
 	return nil

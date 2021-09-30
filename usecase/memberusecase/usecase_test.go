@@ -77,7 +77,7 @@ func TestFetchFromMysqlHandler(t *testing.T) {
 		req := &MemberFetchRequest{Id: 99}
 
 		res, err := u.FetchFromMysql(*req)
-		expected := domain.ErrMemberNotFound
+		expected := ErrNotFound
 
 		if res != nil {
 			t.Error("\nActually: ", res, "\nExpected: ", expected)
@@ -184,7 +184,7 @@ func TestFetchAllFromMysqlHandler(t *testing.T) {
 		u := &UseCase{MemberRepository: repo}
 
 		res, err := u.FetchAllFromMysql()
-		expected := domain.ErrMemberNotFound
+		expected := ErrNotFound
 
 		if res != nil {
 			t.Error("\nActually: ", res, "\nExpected: ", expected)
