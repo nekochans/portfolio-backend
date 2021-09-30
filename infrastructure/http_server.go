@@ -70,6 +70,8 @@ func (s *HttpServer) GetMemberById(w http.ResponseWriter, r *http.Request, id in
 				),
 			)
 		}
+
+		return
 	}
 
 	if err := CreateJsonResponse(w, r, http.StatusOK, member); err != nil {
@@ -87,20 +89,27 @@ func (s *HttpServer) GetWebservices(w http.ResponseWriter, r *http.Request) {
 
 	u := webserviceusecase.UseCase{WebServiceRepository: repo}
 
-	res, ErrFetchAll := u.FetchAllFromMysql()
-	if ErrFetchAll != nil {
-		ErrCreateError := CreateErrorResponse(w, r, ErrFetchAll)
-		if ErrCreateError != nil {
-			ErrCreateErrorResponse := errors.Wrap(ErrCreateError, "failed to create error response")
-			s.Logger.Error(ErrCreateErrorResponse.Error(), zap.Error(ErrCreateErrorResponse))
+	res, err := u.FetchAllFromMysql()
+	if err != nil {
+		if err := CreateErrorResponse(w, r, err); err != nil {
+			s.Logger.Error(
+				err.Error(),
+				zap.Error(
+					errors.Wrap(err, "failed to create error response"),
+				),
+			)
 		}
+
 		return
 	}
 
-	ErrCreateJson := CreateJsonResponse(w, r, http.StatusOK, res)
-	if ErrCreateJson != nil {
-		ErrCreateJsonResponse := errors.Wrap(ErrCreateJson, "failed to create json response")
-		s.Logger.Error(ErrCreateJsonResponse.Error(), zap.Error(ErrCreateJsonResponse))
+	if err := CreateJsonResponse(w, r, http.StatusOK, res); err != nil {
+		s.Logger.Error(
+			err.Error(),
+			zap.Error(
+				errors.Wrap(err, "failed to create json response"),
+			),
+		)
 	}
 }
 
