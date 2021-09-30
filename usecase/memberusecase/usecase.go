@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	ErrNotFound   = errors.New("member not found")
-	ErrUnexpected = errors.New("member UseCase unexpected error")
+	ErrNotFound   = errors.New("MemberUseCase member not found")
+	ErrUnexpected = errors.New("MemberUseCase unexpected error")
 )
 
 type UseCase struct {

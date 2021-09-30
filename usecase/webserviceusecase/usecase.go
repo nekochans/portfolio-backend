@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	ErrNotFound   = errors.New("web service not found")
-	ErrUnexpected = errors.New("web service UseCase unexpected error")
+	ErrNotFound   = errors.New("WebServiceUseCase web service not found")
+	ErrUnexpected = errors.New("WebServiceUseCase unexpected error")
 )
 
 type UseCase struct {
