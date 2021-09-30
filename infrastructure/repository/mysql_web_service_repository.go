@@ -40,7 +40,12 @@ func (r *MysqlWebServiceRepository) FindAll() (domain.WebServices, error) {
 
 	defer func() {
 		if err := stmt.Close(); err != nil {
-			r.Logger.Error("stmt.Close() Fatal.", zap.Error(err))
+			r.Logger.Error(
+				"stmt.Close() Fatal.",
+				zap.Error(
+					errors.Wrap(err, "stmt.Close() Fatal."),
+				),
+			)
 		}
 	}()
 

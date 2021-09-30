@@ -47,7 +47,12 @@ func (r *MysqlMemberRepository) Find(id int) (*Openapi.Member, error) {
 
 	defer func() {
 		if err := stmt.Close(); err != nil {
-			r.Logger.Error("stmt.Close() Fatal.", zap.Error(err))
+			r.Logger.Error(
+				"stmt.Close() Fatal.",
+				zap.Error(
+					errors.Wrap(err, "stmt.Close() Fatal."),
+				),
+			)
 		}
 	}()
 
@@ -107,7 +112,12 @@ func (r *MysqlMemberRepository) FindAll() (domain.Members, error) {
 
 	defer func() {
 		if err := stmt.Close(); err != nil {
-			r.Logger.Error("stmt.Close() Fatal.", zap.Error(err))
+			r.Logger.Error(
+				"stmt.Close() Fatal.",
+				zap.Error(
+					errors.Wrap(err, "stmt.Close() Fatal."),
+				),
+			)
 		}
 	}()
 
