@@ -3,6 +3,12 @@ package memberusecase
 import (
 	"github.com/nekochans/portfolio-backend/domain"
 	Openapi "github.com/nekochans/portfolio-backend/openapi"
+	"github.com/pkg/errors"
+)
+
+var (
+	ErrNotFound   = errors.New("member not found")
+	ErrUnexpected = errors.New("member UseCase unexpected error")
 )
 
 type UseCase struct {
@@ -16,7 +22,12 @@ type MemberFetchRequest struct {
 func (u *UseCase) FetchFromMysql(req MemberFetchRequest) (*Openapi.Member, error) {
 	res, err := u.MemberRepository.Find(req.Id)
 	if err != nil {
-		return nil, err
+		switch errors.Cause(err) {
+		case domain.ErrMemberNotFound:
+			return nil, errors.Wrap(ErrNotFound, err.Error())
+		default:
+			return nil, errors.Wrap(ErrUnexpected, err.Error())
+		}
 	}
 
 	return res, nil
@@ -58,7 +69,12 @@ func (u *UseCase) FetchAll() *MemberFetchAllResponse {
 func (u *UseCase) FetchAllFromMysql() (*MemberFetchAllResponse, error) {
 	res, err := u.MemberRepository.FindAll()
 	if err != nil {
-		return nil, err
+		switch errors.Cause(err) {
+		case domain.ErrMemberNotFound:
+			return nil, errors.Wrap(ErrNotFound, err.Error())
+		default:
+			return nil, errors.Wrap(ErrUnexpected, err.Error())
+		}
 	}
 
 	return &MemberFetchAllResponse{Items: res}, nil

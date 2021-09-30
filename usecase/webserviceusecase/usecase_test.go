@@ -102,7 +102,7 @@ func TestFetchAllFromMysqlHandler(t *testing.T) {
 		repo := &repository.MysqlWebServiceRepository{Db: db}
 		u := &UseCase{WebServiceRepository: repo}
 		res, err := u.FetchAllFromMysql()
-		expected := domain.ErrWebServiceNotFound
+		expected := ErrNotFound
 
 		if res != nil {
 			t.Error("\nActually: ", res, "\nExpected: ", expected)
