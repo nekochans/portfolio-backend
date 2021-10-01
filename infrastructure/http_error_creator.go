@@ -10,21 +10,18 @@ import (
 type HttpErrorCreator struct{}
 
 func (c *HttpErrorCreator) CreateFromError(err error) Openapi.Error {
-	const notFoundErrorCode = 404
-	const internalServerErrorCode = 500
-
-	var code int
+	var code Openapi.ErrorCode
 	var message string
 
 	switch errors.Cause(err) {
 	case memberusecase.ErrNotFound:
-		code = notFoundErrorCode
+		code = Openapi.ErrorCodeN404
 		message = "Member Not Found"
 	case webserviceusecase.ErrNotFound:
-		code = notFoundErrorCode
+		code = Openapi.ErrorCodeN404
 		message = "WebService Not Found"
 	default:
-		code = internalServerErrorCode
+		code = Openapi.ErrorCodeN500
 		message = "Internal Server Error"
 	}
 

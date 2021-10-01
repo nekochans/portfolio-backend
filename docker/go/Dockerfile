@@ -1,4 +1,4 @@
-FROM golang:1.17-alpine3.13 as build
+FROM golang:1.17-alpine3.14 as build
 
 LABEL maintainer="https://github.com/nekochans"
 
@@ -6,11 +6,11 @@ WORKDIR /go/app
 
 COPY . .
 
-ARG GOLANGCI_LINT_VERSION=v1.32.0
+ARG GOLANGCI_LINT_VERSION=v1.42.1
 ARG AIR_VERSION=v1.27.3
 ARG DLV_VERSION=v1.7.1
 ARG OAPI_CODEGEN_VERSION=v1.8.2
-ARG MIGRATE_VERSION=v4.14.1
+ARG MIGRATE_VERSION=v4.15.0
 
 RUN set -eux && \
   apk update && \
@@ -27,7 +27,7 @@ RUN set -eux && \
 
 ENV CGO_ENABLED 0
 
-FROM alpine:3.13
+FROM alpine:3.14
 
 WORKDIR /app
 
