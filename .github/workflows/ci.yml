@@ -34,7 +34,7 @@ jobs:
           docker-compose up --build -d
       - name: Execute CI
         run: |
-          sleep 10
+          sleep 20
           docker-compose exec -T go make migrate-up
           docker-compose exec -T go make ci
       - name: Set up Go
