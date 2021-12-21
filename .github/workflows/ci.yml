@@ -35,7 +35,6 @@ jobs:
       - name: Execute CI
         run: |
           sleep 10
-          docker-compose exec -T ${DB_HOST} service mysql status
           docker-compose exec -T go make migrate-up
           docker-compose exec -T go make ci
       - name: Set up Go
