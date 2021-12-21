@@ -11,4 +11,4 @@ CREATE TABLE `members_github_users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_members_github_users_01` (`member_id`),
   CONSTRAINT `fk_members_github_users_01` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin ROW_FORMAT=DYNAMIC;
