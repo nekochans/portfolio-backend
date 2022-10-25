@@ -16,6 +16,5 @@ test:
 	@go clean -testcache
 	@go test -p 1 -v ./...
 ci: lint
-	@go mod tidy && git diff -s --exit-code go.sum
 	@go clean -testcache
 	@go test -p 1 -v -coverprofile=covprofile.out -covermode atomic ./...
